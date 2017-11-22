@@ -40,7 +40,7 @@ def get_sets(nb_files):
 
 def main():
     # ici : n=6
-    nb_files=2
+    nb_files=10
     Sets=get_sets(nb_files)
     print(Sets)
     
