@@ -216,7 +216,7 @@ def croiser_population(pop):
 
 def muter_pop(pop):
     for chromo in pop:
-        muter_ajout(chromo,list_ex-danger[rd.randint(0,len(list_ex_danger)-1)])       #list_ex_danger est une variable globale
+        muter_ajout(chromo,list_ex_danger[rd.randint(0,len(list_ex_danger)-1)])       #list_ex_danger est une variable globale
         muter_suppr(chromo)
         for i in range(len(chromo)):
             muter_cat(chromo)
