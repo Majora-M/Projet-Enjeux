@@ -141,11 +141,11 @@ def muter_cat(chromo):
                 P[1]-=1
 
 def muter_statut(chromo):
-    p=rd.random()
+    p=random()
     if p>=p_statut:  #muter le chromosome
-        k=rd.randint(0,len(chromo)-1)
+        k=randint(0,len(chromo)-1)
         gen=chromo[k]   #on choisit un gène a muter
-        j=rd.randint(0,n-1)
+        j=randint(0,n-1)
         gen[j][0]=(gen[j][0]-1)**2
         
 
@@ -216,7 +216,7 @@ def croiser_population(pop):
 
 def muter_pop(pop):
     for chromo in pop:
-        muter_ajout(chromo,list_ex_danger[rd.randint(0,len(list_ex_danger)-1)])       #list_ex_danger est une variable globale
+        muter_ajout(chromo,list_ex_danger[randint(0,len(list_ex_danger)-1)])       #list_ex_danger est une variable globale
         muter_suppr(chromo)
         for i in range(len(chromo)):
             muter_cat(chromo)
