@@ -64,27 +64,30 @@ def get_L_ex(nb_files, nc):
             format  L_ex=[ [liste des exemples de classe 1], [liste des exemples de classe 2], ... ]
             ! cette liste est totale, et comprend les exemples de tous les fichiers .txt, voir read_file
     """
-    L_ex=[[] for i in range(nc)]
+    L_classes=[[] for i in range(nc)]
+    L_ex=[]
     for i in range(1, nb_files+1):
         l_ex=read_file("donnees/Jeu drugs and explosives_15 "+str(i)+".txt", nc)
         for j in range(len(l_ex)):
-            L_ex[j].extend(l_ex[j])
-    return L_ex
+            L_classes[j].extend(l_ex[j])
+            L_ex.extend(l_ex[j])
+    return L_classes, L_ex
     
-def print_L_ex(L_ex, nc):
+def print_Ls(L_classes, L_ex, nc):
     """ Fonction de débeuguage
         la commenter dans le main
     """
     for i in range(nc):
-        for j in range(len(L_ex[i])):
-            print(L_ex[i][j])
+        for j in range(len(L_classes[i])):
+            print(L_classes[i][j])
+            print(L_ex[i])
 
 def main():
     # ici : n=6
     nc=2                            #nb de classes
     nb_files=10                     #nb de fichiers .txt dans lesquels ils faut lire
-    L_ex=get_L_ex(nb_files, nc)
-    # print_L_ex(L_ex,nc)           #pour le débeuguage à garder commentée pour ne pas spammer
+    L_classes, L_ex=get_L_ex(nb_files, nc)
+    # print_Ls(L_classes, L_ex,nc)           #pour le débeuguage à garder commentée pour ne pas spammer
     
 main()
 
