@@ -203,7 +203,7 @@ def fitness(chromo, L_test):
 
 ## Algo génétique
 
-def creer_population(N,n):
+def creer_population(N,n,L_ex):
     return creer_chromosome(L_ex.shuffle[:N],n) 
 
 def selection(pop_ini): # fct ??
@@ -237,8 +237,8 @@ def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe):
             muter_cat(chromo,p_cat,n,nb)
             muter_statut(chromo,p_statut,n)
 
-def algo_gen(N, nb_gen,pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe):
-    pop=creer_population(N)
+def algo_gen(N, nb_gen,pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex):
+    pop=creer_population(N,n,L_ex)
     for i in range(nb_gen):
         croiser_population(pop)
         muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe)
