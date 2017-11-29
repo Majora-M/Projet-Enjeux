@@ -231,11 +231,21 @@ def selection(pop_ini):
     pop_fin=[pop_ini[score[i][1]] for i in range(m//2,m)]
     return(pop_fin)
 
+def tirer_chromo(l):                                # l=[(x,s)] où x sont des individus et s leur score
+    score_total=sum(l[i][1] for i in range (len(l)))
+    l0=[l[0][1]/score_total]
+    for i in range(len(l)-1):
+        l0.append(l[i+1][1]/score_total+l0[i])
+    r=random()
+    i=0
+    while l0[i]<r:
+        i+=1
+    return(l[i][0])
+
 def croiser_population(pop):
-    rd.shuffle(pop)
-    m=len(pop)
-    pop+=[croiser_chromo(pop[i],pop[i+1]) for i in range(m-1)]
-    pop+=croiser_chromo(pop[0],pop_ini[m-1])
+    l=[(pop[i],fct(pop[i])) for i in range(len(pop))]
+    for i in range(len(pop)):
+        pop.append(croiser_chromo(tirer_chromo(l),tirer_chromo(l)))
 
 def muter_pop(pop):
     for chromo in pop:
