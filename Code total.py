@@ -81,12 +81,30 @@ def histogramme(L,nombre_pics):
     X=np.linspace(a,100-a,nombre_pics)
     Y=[ sum([ mu(x-a,x-a,x+a,x+a)(i)/(2*a*length) for i in L]) for x in X]
     trace_repere(100,max(Y))
-    plt.plot(X,Y,'o',ls='--')
+    plt.plot(X,Y,'k')
+
+def histogramme_normalise(L,nombre_pics):
+    a=100/(2*nombre_pics)
+    length=len(L)
+    X=np.linspace(a,100-a,nombre_pics)
+    Y=[ sum([ mu(x-a,x-a,x+a,x+a)(i)/(2*a*length) for i in L]) for x in X]
+    trace_repere(100,1)
+    maxi=max(Y)
+    plt.plot(X,[y/maxi for y in Y],'--k')
 
 # exemple : histogramme([random()*100 for i in range(5000)],200)
 
 def f(X): # Pas important...
     return [(x-50)**3/50**3*50+50 for x in X]
+    
+def histo_element(l,k,nombre_pics):
+    histogramme([x[k+2] for x in l],nombre_pics)
+
+def histo_element_normalise(l,k,nombre_pics):
+    histogramme_normalise([x[k+2] for x in l],nombre_pics)
+
+# trace_partition(L[1])
+# histo_element_normalise(l,1,100)
 
 ## Création vecteur et chromosome
     
@@ -104,21 +122,26 @@ def classe_dominante(x,parti): # Pour x, pourcentage pour un élément chimique 
             k=i
     return k
 
-def creer_gene(exemple): # Crée un gène adapté pour l'exemple
-    n=len(vecteur)
-    return [  [1,classe_dominante(vecteur[k+2],partitions[k])] for k in range(n)]+[exemple[1]]
 
-# exemple : creer_gene([10,95,80,79],[partition([20,80]),partition([10,15,60,90]),partition([56,59]),partition([11,50,70,90])],1)
+def creer_gene(exemple): # Crée un gène adapté pour l'exemple
+    return [  [1,classe_dominante(exemple[k+2],partitions[k])] for k in range(n)]+[exemple[1]]
+
+# exemple : creer_gene([10,95,80,79],1)
 
 def creer_chromosome(liste_of_exemples):
-    return [creer_gene(x) for x in list_of_exemples ]
+    return [creer_gene(x) for x in liste_of_exemples ]
+
 
 ## Fonctions d'évolution de la population
 
-def muter_ajout(chromo,exemple):
+def muter_ajout(chromo,L_mat):
     p=random()
     if p<=p_ajout:
-        chromo+=creer_gene(exemple)
+        ajout=creer_gene(choice(choice(L_mat)))
+        i=0
+        while ajout in chromo and i<10:
+            ajout=creer_gene(choice(choice(L_mat)))
+        chromo+=ajout
 
 def muter_suppr(chromo):
     p=random()
