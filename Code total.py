@@ -5,21 +5,6 @@ from math import *
 import os
 import inspect
 
-## Données globales
-
-
-
-n=6
-partitions=[]
-p_ajout=0
-p_suppr=0
-p_cat=0
-p_statut=0
-N=10
-list_ex_danger=[]
-list_ex_non_danger=[]
-list_ex=[]
-
 ## Fonctions d'appartenance
 
 def mu(a,b,c,d):
@@ -81,12 +66,27 @@ def histogramme(L,nombre_pics):
     X=np.linspace(a,100-a,nombre_pics)
     Y=[ sum([ mu(x-a,x-a,x+a,x+a)(i)/(2*a*length) for i in L]) for x in X]
     trace_repere(100,max(Y))
-    plt.plot(X,Y,'o',ls='--')
+    plt.plot(X,Y,'k')
+
+def histogramme_normalise(L,nombre_pics):
+    a=100/(2*nombre_pics)
+    length=len(L)
+    X=np.linspace(a,100-a,nombre_pics)
+    Y=[ sum([ mu(x-a,x-a,x+a,x+a)(i)/(2*a*length) for i in L]) for x in X]
+    trace_repere(100,1)
+    maxi=max(Y)
+    plt.plot(X,[y/maxi for y in Y],'--k')
 
 # exemple : histogramme([random()*100 for i in range(5000)],200)
+    
+def histo_element(l,k,nombre_pics):
+    histogramme([x[k+2] for x in l],nombre_pics)
 
-def f(X): # Pas important...
-    return [(x-50)**3/50**3*50+50 for x in X]
+def histo_element_normalise(l,k,nombre_pics):
+    histogramme_normalise([x[k+2] for x in l],nombre_pics)
+
+# trace_partition(L[1])
+# histo_element_normalise(l,1,100)
 
 ## Création vecteur et chromosome
     
@@ -104,29 +104,34 @@ def classe_dominante(x,parti): # Pour x, pourcentage pour un élément chimique 
             k=i
     return k
 
-def creer_gene(exemple): # Crée un gène adapté pour l'exemple
-    n=len(vecteur)
-    return [  [1,classe_dominante(vecteur[k+2],partitions[k])] for k in range(n)]+[exemple[1]]
 
-# exemple : creer_gene([10,95,80,79],[partition([20,80]),partition([10,15,60,90]),partition([56,59]),partition([11,50,70,90])],1)
+def creer_gene(exemple,n): # Crée un gène adapté pour l'exemple
+    return [  [1,classe_dominante(exemple[k+2],partitions[k])] for k in range(n)]+[exemple[1]]
 
-def creer_chromosome(liste_of_exemples):
-    return [creer_gene(x) for x in list_of_exemples ]
+# exemple : creer_gene([10,95,80,79],1)
+
+def creer_chromosome(liste_of_exemples,n):
+    return [creer_gene(x,n) for x in liste_of_exemples ]
+
 
 ## Fonctions d'évolution de la population
 
-def muter_ajout(chromo,exemple):
+def muter_ajout(chromo,L_classe,p_ajout,n):
     p=random()
     if p<=p_ajout:
-        chromo+=creer_gene(exemple)
+        ajout=creer_gene(choice(choice(L_classe)),n)
+        i=0
+        while ajout in chromo and i<10:
+            ajout=creer_gene(choice(choice(L_classe)),n)
+        chromo+=ajout
 
-def muter_suppr(chromo):
+def muter_suppr(chromo,p_suppr,n): 
     p=random()
     if p<=p_suppr:
         k=randint(0,n-1)
         chromo=chromo[:k]+chromo[(k+1):]
 
-def muter_cat(chromo):
+def muter_cat(chromo,p_cat,n,nb): #à modifier !! (doublons)
     p=random()
     if p<=p_cat:
         i = randint(0,len(chromo)-1)
@@ -140,9 +145,9 @@ def muter_cat(chromo):
             if P[1]>0:
                 P[1]-=1
 
-def muter_statut(chromo):
+def muter_statut(chromo,p_statut,n): #à modifier !! (doublons)
     p=random()
-    if p>=p_statut:  #muter le chromosome
+    if p<=p_statut:  #muter le chromosome
         k=randint(0,len(chromo)-1)
         gen=chromo[k]   #on choisit un gène a muter
         j=randint(0,n-1)
@@ -168,7 +173,7 @@ def croiser_chromo(chromo1,chromo2):
 
 ## Fonction Fitness
 
-def test(chromo, ex):
+def test(chromo, ex,n):
     ccl=[]
     for regle in chromo:
         certitude=1
@@ -188,45 +193,55 @@ def score(ccl,ex):
         note=1-ccl[-1][0]
     return(note)
 
-def fitness(chromo, list_ex):
+def fitness(chromo, L_test):
     note=0
-    N=len(litse_ex)
-    for ex in list_ex:
+    longeur=len(L_test)
+    for ex in L_test:
         note+=score(test(chromo,ex),ex)
-    return(note/N)
+    return(note/longueur)
 
 
 ## Algo génétique
 
-def creer_population(N):
-    return creer_chromosome(list_ex_danger.shuffle[:N]) 
+def creer_population(N,n,L_ex):
+    return creer_chromosome(L_ex.shuffle[:N],n) 
 
-def selection(pop_ini):
+def selection(pop_ini): # fct ??
     m=len(pop_ini)
     score=[(fct(pop_ini[i]),i) for i in range(m)]
     score.sort()                                                #attention, classe du plus petit au plus grand
     pop_fin=[pop_ini[score[i][1]] for i in range(m//2,m)]
     return(pop_fin)
 
-def croiser_population(pop):
-    rd.shuffle(pop)
-    m=len(pop)
-    pop+=[croiser_chromo(pop[i],pop[i+1]) for i in range(m-1)]
-    pop+=croiser_chromo(pop[0],pop_ini[m-1])
+def tirer_chromo(l):                                # l=[(x,s)] où x sont des individus et s leur score
+    score_total=sum(l[i][1] for i in range (len(l)))
+    l0=[l[0][1]/score_total]
+    for i in range(len(l)-1):
+        l0.append(l[i+1][1]/score_total+l0[i])
+    r=random()
+    i=0
+    while l0[i]<r:
+        i+=1
+    return(l[i][0])
 
-def muter_pop(pop):
+def croiser_population(pop): # fct ??
+    l=[(pop[i],fct(pop[i])) for i in range(len(pop))]
+    for i in range(len(pop)):
+        pop.append(croiser_chromo(tirer_chromo(l),tirer_chromo(l)))
+
+def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe):
     for chromo in pop:
-        muter_ajout(chromo,list_ex_danger[randint(0,len(list_ex_danger)-1)])       #list_ex_danger est une variable globale
-        muter_suppr(chromo)
+        muter_ajout(chromo,L_classe,p_ajout,n)       #list_ex_danger est une variable globale
+        muter_suppr(chromo,p_suppr,n)
         for i in range(len(chromo)):
-            muter_cat(chromo)
-            muter_statut(chromo)
+            muter_cat(chromo,p_cat,n,nb)
+            muter_statut(chromo,p_statut,n)
 
-def algo_gen(m, nb_gen):
-    pop=creer_population(m)
+def algo_gen(N, nb_gen,pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex):
+    pop=creer_population(N,n,L_ex)
     for i in range(nb_gen):
         croiser_population(pop)
-        muter_pop(pop)
+        muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe)
         pop=selection(pop)
     return(pop[0])
 
