@@ -4,6 +4,7 @@ from random import *
 from math import *
 import os
 import inspect
+from copy import *
 
 ## Fonctions d'appartenance
 
@@ -116,34 +117,47 @@ def creer_chromosome(liste_of_exemples,n):
 
 ## Fonctions d'évolution de la population
 
-def muter_ajout(chromo,L_classe,p_ajout,n):
+def muter_ajout(chromo,L_classe,p_ajout,n,taille_while):
     p=random()
     if p<=p_ajout:
         ajout=creer_gene(choice(choice(L_classe)),n)
         i=0
-        while ajout in chromo and i<10:
+        while ajout in chromo and i<taille_while:
             ajout=creer_gene(choice(choice(L_classe)),n)
-        chromo+=ajout
+            i+=1
+        if i<taille_while:
+            chromo+=[ajout]
 
-def muter_suppr(chromo,p_suppr,n): 
+def muter_suppr(chromo,p_suppr): 
     p=random()
     if p<=p_suppr:
-        k=randint(0,n-1)
-        chromo=chromo[:k]+chromo[(k+1):]
+        k=randint(0,len(chromo)-1)
+        chromo.remove(chromo[k])
 
-def muter_cat(chromo,p_cat,n,nb): #à modifier !! (doublons)
+
+def muter_cat(chromo,p_cat,nb,taille_while):
     p=random()
     if p<=p_cat:
-        i = randint(0,len(chromo)-1)
-        j=randint(0,n-1)
-        s=randint(0,1)
-        P=chromo[i][j]
-        if s:
-            if P[1]<nb-1:
-                P[1]+=1
-        else:
-            if P[1]>0:
-                P[1]-=1
+        l=deepcopy(chromo)
+        i_boucle=0
+        fin=True
+        while fin and i_boucle<taille_while:
+            i = randint(0,len(chromo)-1)
+            P=choice(l[i][:-1])
+            if P[1]==0:
+                P[1]=1
+            else:
+                if P[1]==(nb-1):
+                    P[1]-=1
+                else:
+                    P[1]+=2*randint(0,1)-1
+            if (not l[i] in chromo[:i]+chromo[(i+1):] ):
+                fin=False
+            else:
+                l=deepcopy(chromo)
+                i_boucle+=1
+        chromo[i]=l[i]
+
 
 def muter_statut(chromo,p_statut,n): #à modifier !! (doublons)
     p=random()
@@ -203,8 +217,13 @@ def fitness(chromo, L_test):
 
 ## Algo génétique
 
-def creer_population(N,n,L_ex):
-    return creer_chromosome(L_ex.shuffle[:N],n) 
+def creer_population(N,n,L_ex,taille_chromo):
+    pop=[]
+    for i in range(N):
+        L=deepcopy(L_ex)
+        shuffle(L)
+        pop+=[creer_chromosome(L[:taille_chromo],n)]
+    return pop
 
 def selection(pop_ini): # fct ??
     m=len(pop_ini)
@@ -237,8 +256,8 @@ def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe):
             muter_cat(chromo,p_cat,n,nb)
             muter_statut(chromo,p_statut,n)
 
-def algo_gen(N, nb_gen,pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex):
-    pop=creer_population(N,n,L_ex)
+def algo_gen(N, nb_gen,pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo):
+    pop=creer_population(N,n,L_ex,taille_chromo)
     for i in range(nb_gen):
         croiser_population(pop)
         muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe)
