@@ -111,8 +111,15 @@ def creer_gene(exemple,n): # Crée un gène adapté pour l'exemple
 
 # exemple : creer_gene([10,95,80,79],1)
 
+def suppr_doublons(l):
+    res=[]
+    for i in l:
+        if not i in res:
+            res+=[i]
+    return res
+
 def creer_chromosome(liste_of_exemples,n):
-    return [creer_gene(x,n) for x in liste_of_exemples ]
+    return suppr_doublons([creer_gene(x,n) for x in liste_of_exemples ])
 
 
 ## Fonctions d'évolution de la population
@@ -159,14 +166,23 @@ def muter_cat(chromo,p_cat,nb,taille_while):
         chromo[i]=l[i]
 
 
-def muter_statut(chromo,p_statut,n): #à modifier !! (doublons)
+def muter_statut(chromo,p_statut,n,taille_while):
     p=random()
     if p<=p_statut:  #muter le chromosome
-        k=randint(0,len(chromo)-1)
-        gen=chromo[k]   #on choisit un gène a muter
-        j=randint(0,n-1)
-        gen[j][0]=(gen[j][0]-1)**2
-        
+        i_boucle=0
+        nouveau = False
+        t=len(chromo)
+        while i_boucle<taille_while and not nouveau:
+            k=randint(0,t-1)
+            gen=deepcopy(chromo[k])   #on choisit un gène a muter
+            j=randint(0,n-1)
+            gen[j][0]=1-gen[j][0]
+            if not gen in chromo:
+                nouveau=True
+            i_boucle+=1
+        if nouveau:
+            chromo[k]=gen
+
 
 def croiser_chromo(chromo1,chromo2):
     c1=chromo1[:]
@@ -250,13 +266,13 @@ def croiser_population(pop): # fct ??
 
 def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe):
     for chromo in pop:
-        muter_ajout(chromo,L_classe,p_ajout,n)       #list_ex_danger est une variable globale
-        muter_suppr(chromo,p_suppr,n)
+        muter_ajout(chromo,L_classe,p_ajout,n,taille_while)       #L_classe est une variable globale
+        muter_suppr(chromo,p_suppr)
         for i in range(len(chromo)):
-            muter_cat(chromo,p_cat,n,nb)
-            muter_statut(chromo,p_statut,n)
+            muter_cat(chromo,p_cat,nb,taille_while)
+            muter_statut(chromo,p_statut,n,taille_while)
 
-def algo_gen(N, nb_gen,pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo):
+def algo_gen(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo):
     pop=creer_population(N,n,L_ex,taille_chromo)
     for i in range(nb_gen):
         croiser_population(pop)
