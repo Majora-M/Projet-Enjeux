@@ -185,8 +185,8 @@ def muter_statut(chromo,p_statut,n,taille_while):
 
 
 def croiser_chromo(chromo1,chromo2):
-    c1=chromo1[:]
-    c2=chromo2[:]
+    c1=deepcopy(chromo1)
+    c2=deepcopy(chromo2)
     chromo_fils=[]
     for regle in c1:
         if regle in c2:
@@ -195,41 +195,38 @@ def croiser_chromo(chromo1,chromo2):
             c2.remove(regle)
     n1=len(c1)
     n2=len(c2)
-    rd.shuffle(c1)
-    rd.shuffle(c2)
-    chromo_fils+=c1[:n1//2]+n2[n2//2:]
+    shuffle(c1)
+    shuffle(c2)
+    chromo_fils+=c1[:n1//2]+c2[n2//2:]
     return(chromo_fils)
 
 
 ## Fonction Fitness
 
-def test(chromo, ex,n):
+def test(chromo,exemple,n):
     ccl=[]
     for regle in chromo:
         certitude=1
         for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
             if regle[i][0]:
-                certitude*= (partitions[i])(ex[i+2]) [regle[i][1]]   #partitions variable globale, liste de fonctions
+                certitude*= (partitions[i])(exemple[i+2]) [regle[i][1]]   #partitions variable globale, liste de fonctions
         if certitude!=0:
-            ccl.append(certitude, regle[-1])
-    ccl.sort()
+            ccl.append([certitude, regle[-1]])
     return(ccl)
 
 
-def score(ccl,ex):
-    if ex[1]==1:
-        note=ccl[-1][0]
-    else:
-        note=1-ccl[-1][0]
-    return(note)
+def score(ccl,exemple):
+    return(sum([ i[0] for i in ccl if i[1]==exemple[1]]))
 
-def fitness(chromo, L_test):
+def fitness(chromo, L_test,n):
     note=0
-    longeur=len(L_test)
+    longueur=len(L_test)
     for ex in L_test:
-        note+=score(test(chromo,ex),ex)
+        note+=score(test(chromo,ex,n),ex)
     return(note/longueur)
 
+def fitness_pop(pop,L_test,n):
+    return max([fitness(i,L_test,n) for i in pop])
 
 ## Algo génétique
 
@@ -241,30 +238,37 @@ def creer_population(N,n,L_ex,taille_chromo):
         pop+=[creer_chromosome(L[:taille_chromo],n)]
     return pop
 
-def selection(pop_ini): # fct ??
+def selection(pop_ini,L_test,n): 
     m=len(pop_ini)
-    score=[(fct(pop_ini[i]),i) for i in range(m)]
-    score.sort()                                                #attention, classe du plus petit au plus grand
-    pop_fin=[pop_ini[score[i][1]] for i in range(m//2,m)]
-    return(pop_fin)
+    l_couple=[(fitness(pop_ini[i],L_test,n),i) for i in range(m)]
+    l_couple.sort()                                                #attention, classe du plus petit au plus grand
+    return([pop_ini[l_couple[i][1]] for i in range(m//2,m)])
 
-def tirer_chromo(l):                                # l=[(x,s)] où x sont des individus et s leur score
-    score_total=sum(l[i][1] for i in range (len(l)))
-    l0=[l[0][1]/score_total]
-    for i in range(len(l)-1):
-        l0.append(l[i+1][1]/score_total+l0[i])
-    r=random()
-    i=0
-    while l0[i]<r:
-        i+=1
-    return(l[i][0])
+#def tirer_chromo(l):                                # l=[(x,s)] où x sont des individus et s leur score
+#    score_total=sum(l[i][1] for i in range (len(l)))
+#    l0=[l[0][1]/score_total]
+#    for i in range(len(l)-1):
+#        l0.append(l[i+1][1]/score_total+l0[i])
+#    r=random()
+#    i=0
+#    while l0[i]<r:
+#        i+=1
+#    return(l[i][0])
 
-def croiser_population(pop): # fct ??
-    l=[(pop[i],fct(pop[i])) for i in range(len(pop))]
-    for i in range(len(pop)):
-        pop.append(croiser_chromo(tirer_chromo(l),tirer_chromo(l)))
+#def croiser_population(pop): 
+#    l=[(pop[i],fct(pop[i])) for i in range(len(pop))]
+#    for i in range(len(pop)):
+#        pop.append(croiser_chromo(tirer_chromo(l),tirer_chromo(l)))
 
-def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe):
+def croiser_population(pop):
+    shuffle(pop)
+    longueur=len(pop)
+    pop+=[croiser_chromo(pop[0],pop[-1])]
+    for i in range(longueur-1):
+        pop+=[croiser_chromo(pop[i],pop[i+1])]
+
+
+def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while):
     for chromo in pop:
         muter_ajout(chromo,L_classe,p_ajout,n,taille_while)       #L_classe est une variable globale
         muter_suppr(chromo,p_suppr)
@@ -272,11 +276,26 @@ def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe):
             muter_cat(chromo,p_cat,nb,taille_while)
             muter_statut(chromo,p_statut,n,taille_while)
 
-def algo_gen(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo):
+def algo_gen(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,L_test,taille_chromo,taille_while):
     pop=creer_population(N,n,L_ex,taille_chromo)
     for i in range(nb_gen):
         croiser_population(pop)
-        muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe)
-        pop=selection(pop)
-    return(pop[0])
+        muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while)
+        pop=selection(pop,L_test,n)
+    return(pop[-1])
+
+def trace_fitness(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,L_test,taille_chromo,taille_while):
+    pop=creer_population(N,n,L_ex,taille_chromo)
+    X=[0]
+    Y=[fitness_pop(pop,L_test,n)]
+    for i in range(nb_gen):
+        croiser_population(pop)
+        muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while)
+        pop=selection(pop,L_test,n)
+        X.append(X[-1]+1)
+        Y.append(fitness_pop(pop,L_test,n))
+    trace_repere(nb_gen,1)
+    plt.plot(X,Y)
+    plt.show()
+
 
