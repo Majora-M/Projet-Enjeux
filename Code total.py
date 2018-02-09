@@ -44,6 +44,9 @@ def trace_partition(l): #On doit avoir len(l)=2n-2 avec n=nombre de fonctions mu
         trace_mu_simple(l[2*i],l[2*i+1],l[2*i+2],l[2*i+3])
     trace_mu_simple(l[-2],l[-1],100,100)
 
+def L2part(l):
+    return [partition(i) for i in l]
+
 ## Histogrammes
 
 def histogramme_par_categorie(L, p, nb):    
@@ -86,6 +89,20 @@ def histo_element(l,k,nombre_pics):
 
 def histo_element_normalise(l,k,nombre_pics):
     histogramme_normalise([x[k+2] for x in l],nombre_pics)
+
+def histogramme_commun(L,nombre_pics,couleur,lon):
+    a=100/(2*nombre_pics)
+    X=np.linspace(a,100-a,nombre_pics)
+    Y=[ sum([ mu(x-a,x-a,x+a,x+a)(i)/(2*a*lon) for i in L]) for x in X]
+    trace_repere(100,max(Y))
+    plt.plot(X,Y,couleur)
+
+def trace_histo(LL,k):
+    lon=len(LL)
+    histogramme_commun([i[2+k] for i in LL],100,'k',lon)
+    histogramme_commun([i[2+k] for i in LL if i[1]==0],100,'g',lon)
+    histogramme_commun([i[2+k] for i in LL if i[1]==2],100,'r',lon)
+    histogramme_commun([i[2+k] for i in LL if i[1]==1],100,'b',lon)
 
 # trace_partition(L[1])
 # histo_element_normalise(l,1,100)
@@ -261,34 +278,79 @@ def test1(chromo,exemple,n):
         for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
             if regle[i][0]:
                 certitude= min(certitude,((partitions[i])(exemple[i+2]) [regle[i][1]]))   #partitions variable globale, liste de fonctions
-        ccl.append([certitude, regle[-1]])
+        if not certitude ==0:
+            ccl.append([certitude, regle[-1]])
     return(ccl)
 
-def score1(ccl,exemple):
-    ll=[ i[0] for i in ccl if i[1]==exemple[1]]
-    ll_autre=[ i[0] for i in ccl if not i[1]==exemple[1]]
-    if ll and ll_autre:
-        return (max(ll)-sum(ll_autre)/len(ll_autre))
-    return 0
+def score1(ccl,exemple,nc):
+    R=[[0,i] for i in range(nc)]
+    for i in ccl:
+        R[i[1]][0]=max(R[i[1]][0],i[0])
+    s=0
+    for i in R:
+        if i[1]==exemple[1]:
+            s+=i[0]
+        else:
+            s-=i[0]/(nc-1)
+    return s
 
-def fitness1(chromo, L_test,n):
+def ccl_tri(chromo,exemple,n,nc):
+    ccl=[]
+    for regle in chromo:
+        certitude=1
+        for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
+            if regle[i][0]:
+                certitude= min(certitude,((partitions[i])(exemple[i+2]) [regle[i][1]]))   #partitions variable globale, liste de fonctions
+        if not certitude ==0:
+            ccl.append([certitude, regle[-1]])
+    R=[0 for i in range(nc)]
+    for i in ccl:
+        R[i[1]]=max(R[i[1]],i[0])
+    return R
+
+def fitness1(chromo, L_ex,n):
+    note=0
+    longueur=len(L_ex)
+    for ex in L_ex:
+        note+=score1(test(chromo,ex,n),ex,nc)
+    return(note/longueur)
+
+def score2(ccl,exemple,nc):
+    R=[[0,i] for i in range(nc)]
+    for i in ccl:
+        R[i[1]][0]=max(R[i[1]][0],i[0])
+    s=0
+    for i in R:
+        if i[1]==exemple[1]:
+            s+=1-i[0]
+        else:
+            s+=i[0]
+    return 1-s/nc
+
+def fitness2(chromo, L_ex,n):
     note=0
     longueur=len(L_test)
     for ex in L_test:
-        note+=score1(test(chromo,ex,n),ex)
+        note+=score2(test(chromo,ex,n),ex,nc)
     return(note/longueur)
+
+def moy(l,N):
+    return sum(l)/N
+
+def liste_fit(pop,fit,L_ex,n):
+    return [fit(pop[i],L_ex,n) for i in range(len(pop))]
 
 ##
 
 
-def fitness_pop(pop,L_test,n,fit):
-    return max([fit(i,L_test,n) for i in pop])
+def fitness_pop(pop,L_ex,n,fit):
+    return max([fit(i,L_ex,n) for i in pop])
     
-def fitness_pop_min(pop,L_test,n,fit):
+def fitness_pop_min(pop,L_ex,n,fit):
     return min([fit(i,L_test,n) for i in pop])  
     
-def fitness_pop_moy(pop,L_test,n,fit,N):
-    return sum([fit(i,L_test,n) for i in pop])/N
+def fitness_pop_moy(pop,L_ex,n,fit,N):
+    return sum([fit(i,L_ex,n) for i in pop])/N
 
 ## Algo génétique
 
@@ -300,11 +362,17 @@ def creer_population(N,n,L_ex,taille_chromo):
         pop+=[creer_chromosome(L[:taille_chromo],n)]
     return pop
 
-def selection(pop_ini,L_test,n,fit): 
+def selection(pop_ini,L_ex,n,fit): 
     m=len(pop_ini)
-    l_couple=[(fit(pop_ini[i],L_test,n),i) for i in range(m)]
+    l_couple=[(fit(pop_ini[i],L_ex,n),i) for i in range(m)]
     l_couple.sort()                                                #attention, classe du plus petit au plus grand
     return([pop_ini[l_couple[i][1]] for i in range(m//2,m)])
+
+def selection1(pop_ini,L_ex,n,fit): 
+    m=len(pop_ini)
+    l_fit=[(fit(pop_ini[i],L_ex,n),i) for i in range(m)]
+    l_fit.sort()                                                #attention, classe du plus petit au plus grand
+    return([pop_ini[l_fit[i][1]] for i in range(m//2,m)],[ i[0] for i in l_fit[(m//2+1):]])
 
 '''
 def tirer_chromo(l):                                # l=[(x,s)] où x sont des individus et s leur score
@@ -332,6 +400,16 @@ def croiser_population(pop):
     for i in range(longueur-1):
         pop+=[croiser_chromo(pop[i],pop[i+1])]
 
+def croiser_population1(pop,l_fit):
+    proportion=[]
+    k=0
+    s=sum(l_fit)
+    for i in l_fit:
+        proportion+=[k for j in range(ceil(100*i/s))]
+        k+=1
+    for i in range(len(pop)):
+        i,j=choice(proportion),choice(proportion)
+        pop+=[croiser_chromo(pop[i],pop[j])]
 
 def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while):
     for chromo in pop:
@@ -340,6 +418,17 @@ def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while):
         for i in range(len(chromo)):
             muter_cat(chromo,p_cat,nb,taille_while)
             muter_statut(chromo,p_statut,n,taille_while)
+
+def epure(chromo,fit,L_ex,n):
+    R=[]
+    i=0
+    while i<len(chromo):
+        if fit(chromo[:i]+chromo[(i+1):],L_ex,n)<fit(chromo,L_ex,n):
+            R.append(chromo[i])
+            i+=1
+        else:
+            chromo=chromo[:i]+chromo[(i+1):]
+    return R
 
 ''' # Sans élitisme
 
@@ -376,32 +465,56 @@ def trace_fitness(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,L_
 
 '''
 
-def lanceur(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,L_test,taille_chromo,taille_while,elitisme,fit):
+def lanceur(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo,taille_while,elitisme,fit,l_indi):
     debut=time.time()
-    pop=creer_population(N,n,L_ex,taille_chromo)
+    pop=creer_population(N-len(l_indi),n,L_ex,taille_chromo)+l_indi
     X=[0]
-    Y_max=[fitness_pop(pop,L_test,n,fit)]
-    Y_moy=[fitness_pop_moy(pop,L_test,n,fit,N)]
-    Y_min=[fitness_pop_min(pop,L_test,n,fit)]
+    l_fit=liste_fit(pop,fit,L_ex,n)
+    Y_max=[max(l_fit)]
+    Y_moy=[moy(l_fit,N)]
+    Y_min=[min(l_fit)]
+    print(0)
     if elitisme:
-        for i in range(nb_gen):
+        indice=l_fit.index(max(l_fit))
+        indi=deepcopy(pop[indice])
+        croiser_population(pop)
+        muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while)
+        pop,l_fit=selection1(pop+[indi],L_ex,n,fit)
+        pop=pop[1:]
+        X.append(X[-1]+1)
+        Y_max.append(max(l_fit))
+        Y_moy.append(moy(l_fit,N))
+        Y_min.append(min(l_fit))
+        print(1)
+        for i in range(nb_gen-1):
             indi=deepcopy(pop[-1])
+            croiser_population1(pop,l_fit)
             muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while)
-            croiser_population(pop)
-            pop=selection(pop+[indi],L_test,n,fit)[1:]
+            pop,l_fit=selection1(pop+[indi],L_ex,n,fit)
+            pop=pop[1:]
             X.append(X[-1]+1)
-            Y_max.append(fitness_pop(pop,L_test,n,fit))
-            Y_moy.append(fitness_pop_moy(pop,L_test,n,fit,N))
-            Y_min.append(fitness_pop_min(pop,L_test,n,fit))
+            Y_max.append(max(l_fit))
+            Y_moy.append(moy(l_fit,N))
+            Y_min.append(min(l_fit))
+            print(2+i)
     else:
-        for i in range(nb_gen):
-            croiser_population(pop)
+        croiser_population(pop)
+        muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while)
+        pop,l_fit=selection(pop,L_ex,n,fit)
+        X.append(X[-1]+1)
+        Y_max.append(max(l_fit))
+        Y_moy.append(moy(l_fit,N))
+        Y_min.append(min(l_fit))
+        print(1)
+        for i in range(nb_gen-1):
+            croiser_population1(pop,l_fit)
             muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while)
-            pop=selection(pop,L_test,n,fit)
+            pop,l_fit=selection1(pop,L_ex,n,fit)
             X.append(X[-1]+1)
-            Y_max.append(fitness_pop(pop,L_test,n,fit))
-            Y_moy.append(fitness_pop_moy(pop,L_test,n,fit,N))
-            Y_min.append(fitness_pop_min(pop,L_test,n,fit))
+            Y_max.append(max(l_fit))
+            Y_moy.append(moy(l_fit,N))
+            Y_min.append(min(l_fit))
+            print(2+i)
     fin=time.time()
     trace_repere(nb_gen,1)
     plt.plot(X,Y_max,'g',label="max")
@@ -413,3 +526,18 @@ def lanceur(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,L_test,t
     plt.show()
     print(fin-debut,Y_max[-1],Y_moy[-1],Y_min[-1])
     return pop
+
+def taux_bc(chromo,L_test,n,nc):
+    t=0
+    t1=0
+    for ex in L_test:
+        l=ccl_tri(chromo,ex,n,nc)
+        k=ex[1]
+        a,b=l[k],max( l[:k]+l[(k+1):] )
+        if a>b:
+            t+=1
+            t1+=1
+        elif a==b:
+            t+=0.5
+    length=len(L_test)
+    return t/length*100,t1/length*100
