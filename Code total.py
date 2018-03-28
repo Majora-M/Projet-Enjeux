@@ -36,6 +36,7 @@ def partition(l):
     def f(x):
         return [mu(0,0,l[0],l[1])(x)]+[mu(l[2*i],l[2*i+1],l[2*i+2],l[2*i+3])(x) for i in range((len(l)+2)//2-2)] + [mu(l[-2],l[-1],100,100)(x)]
     return f
+#f associe à un élément x la liste de ses degrés d'appartenance aux domaines définis par l
 
 def trace_partition(l): #On doit avoir len(l)=2n-2 avec n=nombre de fonctions mu
     trace_repere(100,1)
@@ -44,16 +45,16 @@ def trace_partition(l): #On doit avoir len(l)=2n-2 avec n=nombre de fonctions mu
         trace_mu_simple(l[2*i],l[2*i+1],l[2*i+2],l[2*i+3])
     trace_mu_simple(l[-2],l[-1],100,100)
 
-def L2part(l):
-    return [partition(i) for i in l]
+def L2part(L):
+    return [partition(l) for l in L]
+#l contient les listes caractérisant les partitions de chaque élément
+#L2part contient donc toutes les fonctions partitions
 
 ## Histogrammes
 
 def histogramme_par_categorie(L, p, nb):    
     n = len(L)-2
-    l = []
-    for i in range(2,n+2):
-        l += [L[i]]
+    l=list(L[2:n+2])
     k = (nb+1)*n 
     X = []
     for i in range(n):
