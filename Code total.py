@@ -319,13 +319,13 @@ def score2(ccl,exemple,nc):
     R=[[0,i] for i in range(nc)]
     for i in ccl:
         R[i[1]][0]=max(R[i[1]][0],i[0])
-    s=0
+    erreur=0
     for i in R:
         if i[1]==exemple[1]:
-            s+=1-i[0]
+            erreur+=1-i[0]
         else:
-            s+=i[0]
-    return 1-s/nc
+            erreur+=i[0]
+    return 1-erreur/nc
 
 def fitness2(chromo, L_ex,n): # Calcule l'écart à la réalité : à utiliser pour le moment
     note=0
