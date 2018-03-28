@@ -1,0 +1,3 @@
+n,nb,nc,N,nb_gen,taille_chromo,taille_while,elitisme
+1,2,3,4,
+2,3,4,5,

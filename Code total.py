@@ -6,6 +6,8 @@ import os
 import inspect
 from copy import *
 import time
+import lire_donnees as lire
+import ecrire_donnees as ecrire
 
 ## Fonctions d'appartenance
 
@@ -84,7 +86,7 @@ def histogramme_normalise(L,nombre_pics):
     plt.plot(X,[y/maxi for y in Y],'--k')
 
 # exemple : histogramme([random()*100 for i in range(5000)],200)
-    def histo_element(l,k,nombre_pics):
+def histo_element(l,k,nombre_pics):
     histogramme([x[k+2] for x in l],nombre_pics)
 
 def histo_element_normalise(l,k,nombre_pics):
@@ -541,3 +543,42 @@ def taux_bc(chromo,L_test,n,nc): # Calcule le taux de bonne classification
             t+=0.5
     length=len(L_test)
     return t/length*100,t1/length*100
+
+################################################################################
+
+def main():
+    n=6
+    nb=5
+    nc=3
+    N=30
+    nb_gen=50
+    taille_chromo=25
+    taille_while=50
+    elitisme=True
+
+    L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]]
+    #        partitions=[partition([25,34,43,52,61,70,79,90]),partition([6,8.5,12,14,23,36,40,60]),partition([2,8,25,34,43,52,61,70]),partition([0.5,0.9,1.1,2,10,20,30,40]),partition([0.5,0.9,1.1,2,10,20,30,40]),partition([0.5,0.9,1.1,2,10,20,30,40])]
+    partitions=L2part(L_partitions)
+
+    L_ex_danger=lire.get_sets(10) # C,Cr,N,Na,0,S
+    L_ex_benigns=lire.get_sets2(10) # C,Cr,N,Na,0,S
+    L_ex_bsimple=lire.get_sets3(10) # C,O,N
+
+    LL=L_ex_benigns
+
+    L_classe=lire.tri_classe(L_ex_benigns[380:],3)
+    L_ex=L_ex_benigns[380:]
+    L_test=L_ex_benigns[:380]
+
+    p_ajout=0.2
+    p_suppr=0.2
+    p_cat=0.1
+    p_statut=0.5
+    fit=fitness1
+
+    pop=lanceur(N,nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo,taille_while,elitisme,fit)
+    
+    print("############")
+    print("exiting main")
+
+# main();
