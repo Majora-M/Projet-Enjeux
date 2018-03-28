@@ -329,8 +329,8 @@ def score2(ccl,exemple,nc):
 
 def fitness2(chromo, L_ex,n): # Calcule l'écart à la réalité : à utiliser pour le moment
     note=0
-    longueur=len(L_test)
-    for ex in L_test:
+    longueur=len(L_ex)
+    for ex in L_ex:
         note+=score2(test(chromo,ex,n),ex,nc)
     return(note/longueur)
 
