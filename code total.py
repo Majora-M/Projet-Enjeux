@@ -387,7 +387,6 @@ def tirer_chromo(l):                                # l=[(x,s)] où x sont des i
     while l0[i]<r:
         i+=1
     return(l[i][0])
-
 def croiser_population(pop): 
     l=[(pop[i],fct(pop[i])) for i in range(len(pop))]
     for i in range(len(pop)):
@@ -421,7 +420,7 @@ def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while):
             muter_cat(chromo,p_cat,nb,taille_while)
             muter_statut(chromo,p_statut,n,taille_while)
 
-def epure(chromo,fit,L_ex,n): # à utiliser à la fin du programme pour enelever les règles inutiles d'un individu
+def epure(chromo,fit,L_ex,n): # à utiliser à la fin du programme pour enlever les règles inutiles d'un individu
     R=[]
     i=0
     while i<len(chromo):
