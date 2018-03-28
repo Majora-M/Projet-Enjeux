@@ -142,7 +142,7 @@ def creer_chromosome(liste_of_exemples,n): #n n'est pas le nombre d'éléments c
 
 ## Fonctions d'évolution de la population
 
-def muter_ajout(chromo,L_classe,p_ajout,n,taille_while):
+def muter_ajout(chromo,L_classe,p_ajout,n,taille_while): # Peut ajouter un gène
     p=random()
     if p<=p_ajout:
         ajout=creer_gene(choice(choice(L_classe)),n)
@@ -153,14 +153,14 @@ def muter_ajout(chromo,L_classe,p_ajout,n,taille_while):
         if i<taille_while:
             chromo+=[ajout]
 
-def muter_suppr(chromo,p_suppr): 
+def muter_suppr(chromo,p_suppr): # Peut supprimer un gène
     p=random()
     if p<=p_suppr:
         k=randint(0,len(chromo)-1)
         chromo.remove(chromo[k])
 
 
-def muter_cat(chromo,p_cat,nb,taille_while):
+def muter_cat(chromo,p_cat,nb,taille_while): # Peut modifier une variable linguistique d'un gène (passage de 'peu de' à 'beaucoup de')
     p=random()
     if p<=p_cat:
         l=deepcopy(chromo)
@@ -185,7 +185,7 @@ def muter_cat(chromo,p_cat,nb,taille_while):
             chromo[i]=l[i]
 
 
-def muter_statut(chromo,p_statut,n,taille_while):
+def muter_statut(chromo,p_statut,n,taille_while): #Peut activer ou désactiver une prémisse
     p=random()
     if p<=p_statut:  #muter le chromosome
         i_boucle=0
@@ -327,7 +327,7 @@ def score2(ccl,exemple,nc):
             s+=i[0]
     return 1-s/nc
 
-def fitness2(chromo, L_ex,n):
+def fitness2(chromo, L_ex,n): # Calcule l'écart à la réalité : à utiliser pour le moment
     note=0
     longueur=len(L_test)
     for ex in L_test:
@@ -343,13 +343,13 @@ def liste_fit(pop,fit,L_ex,n):
 ##
 
 
-def fitness_pop(pop,L_ex,n,fit):
+def fitness_pop(pop,L_ex,n,fit): # Calcul de la fitness max
     return max([fit(i,L_ex,n) for i in pop])
     
-def fitness_pop_min(pop,L_ex,n,fit):
+def fitness_pop_min(pop,L_ex,n,fit): # """ min
     return min([fit(i,L_test,n) for i in pop])  
     
-def fitness_pop_moy(pop,L_ex,n,fit,N):
+def fitness_pop_moy(pop,L_ex,n,fit,N): # """ moyenne
     return sum([fit(i,L_ex,n) for i in pop])/N
 
 ## Algo génétique
@@ -368,7 +368,7 @@ def selection(pop_ini,L_ex,n,fit):
     l_couple.sort()                                                #attention, classe du plus petit au plus grand
     return([pop_ini[l_couple[i][1]] for i in range(m//2,m)])
 
-def selection1(pop_ini,L_ex,n,fit): 
+def selection1(pop_ini,L_ex,n,fit): # Sélection proportionnelle à la fitness des individus
     m=len(pop_ini)
     l_fit=[(fit(pop_ini[i],L_ex,n),i) for i in range(m)]
     l_fit.sort()                                                #attention, classe du plus petit au plus grand
@@ -400,7 +400,7 @@ def croiser_population(pop):
     for i in range(longueur-1):
         pop+=[croiser_chromo(pop[i],pop[i+1])]
 
-def croiser_population1(pop,l_fit):
+def croiser_population1(pop,l_fit): #Croisement proportionnel à la fitness
     proportion=[]
     k=0
     s=sum(l_fit)
@@ -419,7 +419,7 @@ def muter_pop(pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,taille_while):
             muter_cat(chromo,p_cat,nb,taille_while)
             muter_statut(chromo,p_statut,n,taille_while)
 
-def epure(chromo,fit,L_ex,n):
+def epure(chromo,fit,L_ex,n): # à utiliser à la fin du programme pour enelever les règles inutiles d'un individu
     R=[]
     i=0
     while i<len(chromo):
@@ -527,7 +527,7 @@ def lanceur(N, nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_c
     print(fin-debut,Y_max[-1],Y_moy[-1],Y_min[-1])
     return pop
 
-def taux_bc(chromo,L_test,n,nc):
+def taux_bc(chromo,L_test,n,nc): # Calcule le taux de bonne classification
     t=0
     t1=0
     for ex in L_test:
