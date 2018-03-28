@@ -4,7 +4,7 @@ nc=3 #nombre de classes
 N=30 #nombre de chromosomes, taille de la population
 nb_gen=50
 taille_chromo=25
-taille_while=50
+taille_while=50 #taille limite de certaines boucles while
 elitisme=True
 
 L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]]
