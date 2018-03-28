@@ -168,14 +168,14 @@ def muter_cat(chromo,p_cat,nb,taille_while): # Peut modifier une variable lingui
         fin=True
         while fin and i_boucle<taille_while:
             i = randint(0,len(chromo)-1)
-            P=choice(l[i][:-1])
-            if P[1]==0:
-                P[1]=1
+            prémisse=choice(l[i][:-1])
+            if prémisse[1]==0:
+                prémisse[1]=1
             else:
-                if P[1]==(nb-1):
-                    P[1]-=1
+                if prémisse[1]==(nb-1):
+                    prémisse[1]-=1
                 else:
-                    P[1]+=2*randint(0,1)-1
+                    prémisse[1]+=2*randint(0,1)-1
             if (not l[i] in chromo[:i]+chromo[(i+1):] ):
                 fin=False
             else:
