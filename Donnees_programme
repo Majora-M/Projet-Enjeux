@@ -1,7 +1,7 @@
-n=6
-nb=5
-nc=3
-N=30
+n=6 #nombre d'éléments chimiques
+nb=5 #nombre de termes d'une partition
+nc=3 #nombre de classes
+N=30 #nombre de chromosomes, taille de la population
 nb_gen=50
 taille_chromo=25
 taille_while=50
