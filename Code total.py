@@ -356,8 +356,8 @@ def fitness_pop_moy(pop,L_ex,n,fit,N): # """ moyenne
 
 def creer_population(N,n,L_ex,taille_chromo):
     pop=[]
+    L=deepcopy(L_ex)
     for i in range(N):
-        L=deepcopy(L_ex)
         shuffle(L)
         pop+=[creer_chromosome(L[:taille_chromo],n)]
     return pop
