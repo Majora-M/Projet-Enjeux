@@ -405,7 +405,7 @@ def croiser_population1(pop,l_fit): #Croisement proportionnel à la fitness
     k=0
     s=sum(l_fit)
     for i in l_fit:
-        proportion+=[k for j in range(ceil(100*i/s))]
+        proportion+=[k for j in range(ceil(100*i/s))] #ne marche que si la population est de taille < à 100
         k+=1
     for i in range(len(pop)):
         i,j=choice(proportion),choice(proportion)
