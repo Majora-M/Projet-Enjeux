@@ -84,8 +84,7 @@ def histogramme_normalise(L,nombre_pics):
     plt.plot(X,[y/maxi for y in Y],'--k')
 
 # exemple : histogramme([random()*100 for i in range(5000)],200)
-    
-def histo_element(l,k,nombre_pics):
+    def histo_element(l,k,nombre_pics):
     histogramme([x[k+2] for x in l],nombre_pics)
 
 def histo_element_normalise(l,k,nombre_pics):
@@ -109,13 +108,13 @@ def trace_histo(LL,k):
 # histo_element_normalise(l,1,100)
 
 ## Création vecteur et chromosome
-    
+#un vecteur contient des pourcentages, pas des chiffres bruts    
 def vecteur_aleatoire(n):
     L=[random() for i in range(n)]
     total=sum(L)
     return [i*100/total for i in L]
     
-def classe_dominante(x,parti): # Pour x, pourcentage pour un élément chimique et parti sa partition associée, renvoie la catégorie dominante de x
+def classe_dominante(x,parti): # x est un pourcentage d'élément chimique, parti la partition associée à l'élément,la fonction renvoie le terme auquel x appartient le plus
     l=parti(x)
     maxi,k=0,0
     for i in range(len(l)):
@@ -137,7 +136,7 @@ def suppr_doublons(l):
             res+=[i]
     return res
 
-def creer_chromosome(liste_of_exemples,n):
+def creer_chromosome(liste_of_exemples,n): #n n'est pas le nombre d'éléments chimiques
     return suppr_doublons([creer_gene(x,n) for x in liste_of_exemples ])
 
 
