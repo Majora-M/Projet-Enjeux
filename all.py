@@ -65,6 +65,13 @@ def classe_dominante(x,parti): # Pour x, pourcentage pour un élément chimique 
             k=i
     return k
 
+def suppr_doublons(l):
+    res=[]
+    for i in l:
+        if not i in res:
+            res+=[i]
+    return res
+
 def creer_regle(exemple,n,partitions): # Crée une règle adaptée pour l'exemple
     return [  [1,classe_dominante(exemple[k+2],partitions[k])] for k in range(n)]+[exemple[1]]
 
@@ -235,7 +242,9 @@ def creer_population(N,n,liste_ex,taille_chromo,partitions):
 
 
 def selection(Pop,N): 
-    Pop=sorted(Pop, key=lambda tup: tup[1])[(N+1):]
+    aux=deepcopy(sorted(Pop, key=lambda tup: tup[1]))
+    Pop=aux[(len(Pop)-N):]
+    return Pop
 
 
 def croiser_population(Pop,N):
@@ -298,7 +307,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille
         f_mutation(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,N,len_ex,partitions,fit)
         if elitisme:
             Pop+=[indi_f_elite]
-        f_selection(Pop,N)
+        Pop=f_selection(Pop,N)
         X.append(i)
         Y_max.append(Pop[-1][1])
         Y_moy.append(sum([i[1] for i in Pop])/N)
@@ -373,46 +382,50 @@ def epure(indi,fit,liste_ex,n,len_ex,nc,partitions):
             indi=indi[:i]+chromo[(i+1):]
     return R
 
-def main():
-    N=2
-    n=6
-    nb=5
-    nc=3
-    nb_gen=5
-    
-    p_ajout=0.2
-    p_suppr=0.2
-    p_cat=0.1
-    p_statut=0.5
-    
-    taille_chromo=5
-    taille_while=50
 
-    L_ex_danger=get_sets(10) # C,Cr,N,Na,0,S
-    L_ex_benigns=get_sets2(10) # C,Cr,N,Na,0,S
-    L_ex_bsimple=get_sets3(10) # C,O,N
-    liste_ex=L_ex_benigns[380:]
-    len_ex=len(liste_ex)
-    liste_test=L_ex_benigns[:380]
+N=10
+n=6 ##
+nb=5 ##
+nc=3 ##
+nb_gen=10
     
-    L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]]
-    partitions=L2part(L_partitions)
+p_ajout=0.2
+p_suppr=0.2
+p_cat=0.1
+p_statut=0.2
     
-    elitisme=True
-    fit=fitness
-    f_croisement=croiser_population1
-    f_mutation=muter_pop
-    f_selection=selection
-    
-    l_indi=[]
+taille_chromo=20
+taille_while=50
 
-    Pop=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi)
-    
-    f_ccl_tri=ccl_tri
-    
-    taux_bc(Pop[-1][0],liste_test,n,nc,partitions,f_ccl_tri)
-    
-    print("############")
-    print("exiting main")
+alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
 
-main()
+L_ex_danger=get_sets(10) # C,Cr,N,Na,0,S     ##
+L_ex_benigns=get_sets2(10) # C,Cr,N,Na,0,S   ##
+L_ex_bsimple=get_sets3(10) # C,O,N           ##
+
+LL=L_ex_benigns
+length=len(LL) ##
+
+liste_ex=LL[(int(alpha*length)):]    ##
+len_ex=len(liste_ex)                 ##
+liste_test=LL[:(int(alpha*length))]  ##
+    
+L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]] ##
+partitions=L2part(L_partitions)  ##
+    
+elitisme=True
+fit=fitness
+f_croisement=croiser_population1
+f_mutation=muter_pop
+f_selection=selection
+    
+l_indi=[]
+
+Pop=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi) ##
+    
+f_ccl_tri=ccl_tri
+    
+taux_bc(Pop[-1][0],liste_test,n,nc,partitions,f_ccl_tri) ##
+    
+print("############") ##
+print("exiting main") ##
