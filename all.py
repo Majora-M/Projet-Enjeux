@@ -9,7 +9,7 @@ import time
 
 ## Fonctions d'appartenance et partitions
 
-def mu(a,b,c,d):
+def mu(a,b,c,d): # Fonction d'appartance trapèze repérée par les points a,b,c,d
     def f(x):
         if x<a or x>d:
             return 0
@@ -51,7 +51,7 @@ def trace_partition(l): #On doit avoir len(l)=2n-2 avec n=nombre de fonctions mu
     
 ## Création vecteur et chromosome
     
-def vecteur_aleatoire(n):
+def vecteur_aleatoire(n): # Crée un vecteur aléatoire de taille n normalisé
     L=[random() for i in range(n)]
     total=sum(L)
     return [i*100/total for i in L]
@@ -65,7 +65,7 @@ def classe_dominante(x,parti): # Pour x, pourcentage pour un élément chimique 
             k=i
     return k
 
-def suppr_doublons(l):
+def suppr_doublons(l): # Supprime les doublons de l
     res=[]
     for i in l:
         if not i in res:
@@ -82,7 +82,7 @@ def creer_indi(liste_of_exemples,n,partitions): # Crée un individu adapté pour
 ## Opérateurs mutation et croisement de règles
 
 
-def muter_ajout(indi,liste_ex,p_ajout,n,taille_while,partitions):
+def muter_ajout(indi,liste_ex,p_ajout,n,taille_while,partitions): # Peut ajouter une règle
     p=random()
     if p<=p_ajout:
         ajout=creer_regle(choice(liste_ex),n,partitions)
@@ -96,7 +96,7 @@ def muter_ajout(indi,liste_ex,p_ajout,n,taille_while,partitions):
     return False
 
 
-def muter_suppr(indi,p_suppr): 
+def muter_suppr(indi,p_suppr): # Peut supprimer une règle
     p=random()
     if p<=p_suppr:
         k=randint(0,len(indi)-1)
@@ -105,7 +105,7 @@ def muter_suppr(indi,p_suppr):
     return False
 
 
-def muter_cat(indi,p_cat,nb,taille_while):
+def muter_cat(indi,p_cat,nb,taille_while): # Peut changer la catégorie d'une prémisse (passer de 'peu de' à 'beaucoup de')
     p=random()
     if p<=p_cat:
         l=deepcopy(indi)
@@ -132,7 +132,7 @@ def muter_cat(indi,p_cat,nb,taille_while):
     return False
 
 
-def muter_statut(indi,p_statut,n,taille_while):
+def muter_statut(indi,p_statut,n,taille_while): # Peut activer ou désactiver une prémisse
     p=random()
     if p<=p_statut:  #muter le chromosome
         i_boucle=0
@@ -152,7 +152,7 @@ def muter_statut(indi,p_statut,n,taille_while):
     return False
 
 
-def croiser_indi(indi1,indi2):
+def croiser_indi(indi1,indi2): # Croisement entre deux individus
     c1=deepcopy(indi1)
     c2=deepcopy(indi2)
     indi_fils=[]
@@ -225,14 +225,14 @@ def fitness1(indi, liste_ex,n,len_ex,nc,partitions): #Marche pas toujours : + et
         note+=score(test(indi,ex,n,partitions),ex,nc)
     return(note/len_ex)
 
-def liste_fit(pop,fit,liste_ex,n,len_ex,nc,partitions):
+def liste_fit(pop,fit,liste_ex,n,len_ex,nc,partitions): # Calcul de la liste de l'ensemble des individus de la population
     return [fit(pop[i],liste_ex,n,len_ex,nc,partitions) for i in range(len(pop))]
 
 
 
 ## Algo génétique
 
-def creer_population(N,n,liste_ex,taille_chromo,partitions):
+def creer_population(N,n,liste_ex,taille_chromo,partitions): # Crée une pop de taille N selon la liste d'exemples
     pop=[]
     for i in range(N):
         L=deepcopy(liste_ex)
@@ -241,20 +241,20 @@ def creer_population(N,n,liste_ex,taille_chromo,partitions):
     return pop
 
 
-def selection(Pop,N): 
+def selection(Pop,N): # Sélection des N meilleurs individus
     aux=deepcopy(sorted(Pop, key=lambda tup: tup[1]))
     Pop=aux[(len(Pop)-N):]
     return Pop
 
 
-def croiser_population(Pop,N):
+def croiser_population(Pop,N): # Croisement de la pop de taille N
     shuffle(pop)
     pop_ajout=[croiser_indi(Pop[0][0],Pop[-1][0])]
     for i in range(longueur-1):
         pop+=[croiser_indi(Pop[i][0],Pop[i+1][0])]
     Pop+=[[[i,-1] for i in pop]]
 
-def croiser_population1(Pop,N): # En fonction de la fitness
+def croiser_population1(Pop,N): # Idem mais en fonction de la fitness
     proportion=[]
     k=0
     s=sum([i[1] for i in Pop])
@@ -266,7 +266,7 @@ def croiser_population1(Pop,N): # En fonction de la fitness
         indi=croiser_indi(Pop[j][0],Pop[k][0])
         Pop+=[[indi,-1]]
 
-def muter_pop(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,N,len_ex,partitions,fit):
+def muter_pop(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,N,len_ex,partitions,fit): # Mutation de toute la population
     for i in range(2*N):
         indi=deepcopy(Pop[i][0])
         same = not muter_ajout(indi,liste_ex,p_ajout,n,taille_while,partitions)       #L_classe est une variable globale
@@ -277,7 +277,7 @@ def muter_pop(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,N
         if (not same) or (Pop[i][1]==-1):
             Pop[i]=[indi,fit(indi, liste_ex,n,len_ex,nc,partitions)] # Si on ne connaît pas la fitness de indi, on la calcule
 
-def muter_pop1(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,N,len_ex,partitions,fit): # Pas de mutation de statut
+def muter_pop1(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,N,len_ex,partitions,fit): # Idem mais pas de mutation de statut
     for i in range(2*N):
         indi=deepcopy(Pop[i][0])
         same = not muter_ajout(indi,liste_ex,p_ajout,n,taille_while,partitions)       #L_classe est une variable globale
@@ -327,7 +327,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille
 
 ## Finalisation
 
-def ccl_tri(indi,exemple,n,nc,partitions): # min et max
+def ccl_tri(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par les règles selon min et max
     ccl=[]
     for regle in indi:
         certitude=1
@@ -341,7 +341,7 @@ def ccl_tri(indi,exemple,n,nc,partitions): # min et max
         R[i[1]]=max(R[i[1]],i[0])
     return R
     
-def ccl_tri1(indi,exemple,n,nc,partitions): # min et max
+def ccl_tri1(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par les règles selon x et +
     ccl=[]
     for regle in indi:
         certitude=1
@@ -355,7 +355,7 @@ def ccl_tri1(indi,exemple,n,nc,partitions): # min et max
         R[i[1]]=R[i[1]]+i[0]
     return R    
 
-def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri):
+def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonne classification
     t=0
     t1=0
     for ex in liste_test:
@@ -371,7 +371,7 @@ def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri):
     print('Taux de bonne classification :',t/length*100,t1/length*100)
 
 
-def epure(indi,fit,liste_ex,n,len_ex,nc,partitions):
+def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du programme, pour enlever les règles inutiles d'un indi
     R=[]
     i=0
     while i<len(indi):
