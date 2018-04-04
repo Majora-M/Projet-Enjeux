@@ -318,6 +318,25 @@ def ccl_tri1(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par
         R[i[1]]=R[i[1]]+i[0]
     return R   
 
+def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonne classification
+    t=0
+    t1=0
+    for ex in liste_test:
+        l=f_ccl_tri(indi,ex,n,nc,partitions)
+        k=ex[1]
+        a,b=l[k],max( l[:k]+l[(k+1):] )
+        if a>b:
+            t+=1
+            t1+=1
+        elif a==b:
+            t+=0.5
+    length = len(liste_test)
+    tbc_ns = t/length*100
+    tbc_s  = t1/length*100
+    print('Taux de bonne classification :',tbc_ns,'%','(non stricte) ;',tbc_s,'%','(stricte)')
+    print('')
+    return tbc_ns,tbc_s
+
 ## Lanceur
 
 def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri):
@@ -380,26 +399,6 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     return Pop,l_resultats
 
 ## Finalisation 
-
-def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonne classification
-    t=0
-    t1=0
-    for ex in liste_test:
-        l=f_ccl_tri(indi,ex,n,nc,partitions)
-        k=ex[1]
-        a,b=l[k],max( l[:k]+l[(k+1):] )
-        if a>b:
-            t+=1
-            t1+=1
-        elif a==b:
-            t+=0.5
-    length = len(liste_test)
-    tbc_ns = t/length*100
-    tbc_s  = t1/length*100
-    print('Taux de bonne classification :',tbc_ns,'%','(non stricte) ;',tbc_s,'%','(stricte)')
-    print('')
-    return tbc_ns,tbc_s
-
 
 def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du programme, pour enlever les règles inutiles d'un indi
     R=[]
