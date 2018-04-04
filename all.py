@@ -5,6 +5,8 @@ from math import *
 import os
 from copy import *
 import time
+import lire_donnees as lire
+import ecrire_donnees as ecrire
 
 ## Fonctions d'appartenance et partitions
 
@@ -286,9 +288,39 @@ def muter_pop1(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,
         if (not same) or (Pop[i][1]==-1):
             Pop[i]=[indi,fit(indi, liste_ex,n,len_ex,nc,partitions)]
 
+## ccl_tri
+
+def ccl_tri(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par les règles selon min et max
+    ccl=[]
+    for regle in indi:
+        certitude=1
+        for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
+            if regle[i][0]:
+                certitude= min(certitude,((partitions[i])(exemple[i+2]) [regle[i][1]]))   #partitions variable globale, liste de fonctions
+        if not certitude ==0:
+            ccl.append([certitude, regle[-1]])
+    R=[0 for i in range(nc)]
+    for i in ccl:
+        R[i[1]]=max(R[i[1]],i[0])
+    return R
+    
+def ccl_tri1(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par les règles selon x et +
+    ccl=[]
+    for regle in indi:
+        certitude=1
+        for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
+            if regle[i][0]:
+                certitude= certitude*(partitions[i](exemple[i+2]) [regle[i][1]])   #partitions variable globale, liste de fonctions
+        if not certitude ==0:
+            ccl.append([certitude, regle[-1]])
+    R=[0 for i in range(nc)]
+    for i in ccl:
+        R[i[1]]=R[i[1]]+i[0]
+    return R   
+
 ## Lanceur
 
-def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi):
+def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri):
     debut=time.time()
     pop=creer_population(N-len(l_indi),n,liste_ex,taille_indi,partitions)+l_indi
     l_fit=liste_fit(pop,fit,liste_ex,n,len_ex,nc,partitions)
@@ -321,45 +353,27 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     plt.ylabel('Fitness')
     plt.legend()
     plt.show()
+    
+    tps_calc    = fin-debut
+    fit_max     = Y_max[-1]
+    fit_moy     = Y_moy[-1]
+    fit_min     = Y_min[-1]
     print('')
-    print('Durée du calcul :',fin-debut,'secondes')
+    print('Durée du calcul :',tps_calc,'secondes')
     print('')
     print('Calcul des fitness :')
-    print('Fit max :',Y_max[-1])
-    print('Fit moyenne :',Y_moy[-1])
-    print('Fit min :',Y_min[-1])
+    print('Fit max :',fit_max)
+    print('Fit moyenne :',fit_moy)
+    print('Fit min :',fit_min)
     print('')
-    return Pop
-
-## Finalisation
-
-def ccl_tri(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par les règles selon min et max
-    ccl=[]
-    for regle in indi:
-        certitude=1
-        for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
-            if regle[i][0]:
-                certitude= min(certitude,((partitions[i])(exemple[i+2]) [regle[i][1]]))   #partitions variable globale, liste de fonctions
-        if not certitude ==0:
-            ccl.append([certitude, regle[-1]])
-    R=[0 for i in range(nc)]
-    for i in ccl:
-        R[i[1]]=max(R[i[1]],i[0])
-    return R
     
-def ccl_tri1(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par les règles selon x et +
-    ccl=[]
-    for regle in indi:
-        certitude=1
-        for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
-            if regle[i][0]:
-                certitude= certitude*(partitions[i](exemple[i+2]) [regle[i][1]])   #partitions variable globale, liste de fonctions
-        if not certitude ==0:
-            ccl.append([certitude, regle[-1]])
-    R=[0 for i in range(nc)]
-    for i in ccl:
-        R[i[1]]=R[i[1]]+i[0]
-    return R    
+    tbc_ns,tbc_s = taux_bc(Pop[-1][0],liste_test,n,nc,partitions,f_ccl_tri)
+    # retourner le liste des parametres utilises et resultats de calcul
+    # N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,    tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s
+    l_resultats=[N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,str(partitions),elitisme,str(fit),str(f_croisement),str(f_mutation),str(f_selection),len(l_indi),tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s]
+    return Pop,l_resultats
+
+## Finalisation 
 
 def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonne classification
     t=0
@@ -373,9 +387,12 @@ def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonn
             t1+=1
         elif a==b:
             t+=0.5
-    length=len(liste_test)
-    print('Taux de bonne classification :',t/length*100,'%','(non stricte) ;',t1/length*100,'%','(stricte)')
+    length = len(liste_test)
+    tbc_ns = t/length*100
+    tbc_s  = t1/length*100
+    print('Taux de bonne classification :',tbc_ns,'%','(non stricte) ;',tbc_s,'%','(stricte)')
     print('')
+    return tbc_ns,tbc_s
 
 
 def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du programme, pour enlever les règles inutiles d'un indi
@@ -428,11 +445,11 @@ f_selection=selection
     
 l_indi=[]
 
-Pop=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi) ##
-    
 f_ccl_tri=ccl_tri
-    
-taux_bc(Pop[-1][0],liste_test,n,nc,partitions,f_ccl_tri) ##
+
+Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri) ##
+
+ecrire.write_file("resultats/testfile.txt", l_resultats)
     
 print("############") ##
 print("exiting main") ##
