@@ -375,7 +375,7 @@ def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonn
         elif a==b:
             t+=0.5
     length=len(liste_test)
-    print('Taux de bonne classification :',t/length*100,'%','(stricte) ;',t1/length*100,'%','(non stricte)')
+    print('Taux de bonne classification :',t/length*100,'%','(non stricte) ;',t1/length*100,'%','(stricte)')
     print('')
 
 
