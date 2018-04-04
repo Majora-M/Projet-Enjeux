@@ -439,17 +439,24 @@ def comparaison_param():
     l_p_ajout   = [0.2]
     #l_p_ajout   = [0.2,0.4,0.6]
         
-    l_taille_indi   = [10]
-    #l_taille_indi   = [1,5,10,20]
+    #l_taille_indi   = [10]
+    l_taille_indi   = [1,5,10,20]
     taille_while    = 50
     
-    l_elitisme      = [True]
-    #l_elitisme      = [True,False]
+    #l_elitisme      = [True]
+    l_elitisme      = [True,False]
     l_fit           = [fitness]
     l_f_croisement  = [croiser_population1]
     l_f_mutation    = [muter_pop]
     l_f_selection   = [selection]
     
+    nb_iterations= len(l_N)*len(l_n)*len(l_nb)*len(l_nc)*len(l_nb_gen)*len(l_p_suppr)*len(l_p_cat)*len(l_p_statut)*len(l_p_ajout)*len(l_taille_indi)*len(taille_while)*len(l_elitisme)*len(l_fit)*len(l_f_croisement)*len(l_f_mutation)*len(l_f_selection)
+    
+    print("---")
+    print("Nombre d'itérations :", nb_iterations)
+    print("---")
+    
+    cpt_iterations=0
     for N in l_N :
         #print("N                        :",N)
         for n in l_n :
@@ -481,6 +488,9 @@ def comparaison_param():
                                                             for f_selection in l_f_selection :
                                                                 #print("              f_selection:",f_selection)  
     
+                                                                cpt_iterations+=1
+                                                                print("iteration", cpt_iterations, "/", nb_iterations)
+                                                                
                                                                 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
                                                                 
                                                                 L_ex_danger  = lire.get_sets(10) # C,Cr,N,Na,0,S     ##
@@ -563,7 +573,7 @@ Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_i
 
 l_resultats_tot.append(l_resultats)
 
-ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
+#ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
 #ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
 
 comparaison_param()
