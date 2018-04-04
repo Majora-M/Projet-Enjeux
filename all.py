@@ -351,6 +351,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     Y_min=[Pop[0][1]]
     print('Initialisation')
     for i in range(1,nb_gen+1):
+        debut_gen=time.time()
         if elitisme:
             indi_f_elite=Pop[-1]
         f_croisement(Pop,N)
@@ -362,7 +363,8 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
         Y_max.append(Pop[-1][1])
         Y_moy.append(sum([i[1] for i in Pop])/N)
         Y_min.append(Pop[0][1])
-        print('Génération',i,'sur',nb_gen)
+        fin_gen=time.time()
+        print('Génération',i,'/',nb_gen,'--- Temps restant approximatif :',int((fin_gen-debut_gen)*(nb_gen-i)),'s')
     fin=time.time()
     trace_repere(nb_gen,1)
     plt.plot(X,Y_max,'g',label="max")
@@ -414,79 +416,13 @@ def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du pro
 l_resultats_tot=[]
 
 
-def comparaison_param():
-    
-    l_resultats_tot = []
-    
-    l_N         = [10]
-    l_n         = [6] 
-    l_nb        = [5] 
-    l_nc        = [3] 
-    l_nb_gen    = [1]
-        
-    l_p_ajout   = [0.2]
-    l_p_suppr   = [0.2]
-    l_p_cat     = [0.1]
-    l_p_statut  = [0.2]
-        
-    l_taille_indi   = [20]
-    taille_while    = 50
-    
-    l_elitisme      = [True]
-    l_fit           = [fitness]
-    l_f_croisement  = [croiser_population1]
-    l_f_mutation    = [muter_pop]
-    l_f_selection   = [selection]
-    
-    for N in l_N :
-        for n in l_n :
-            for nb in l_nb :
-                for nc in l_nc :
-                    for nb_gen in l_nb_gen :
-                        for p_ajout in l_p_ajout :
-                            for p_suppr in l_p_suppr :
-                                for p_cat in l_p_cat :
-                                    for p_statut in l_p_statut :
-                                        for taille_indi in l_taille_indi :
-                                            for elitisme in l_elitisme :
-                                                for fit in l_fit :
-                                                    for f_croisement in l_f_croisement :
-                                                        for f_mutation in l_f_mutation :
-                                                            for f_selection in l_f_selection :
-                                            
-    
-                                                                alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
-                                                                
-                                                                L_ex_danger  = lire.get_sets(10) # C,Cr,N,Na,0,S     ##
-                                                                L_ex_benigns = lire.get_sets2(10) # C,Cr,N,Na,0,S   ##
-                                                                L_ex_bsimple = lire.get_sets3(10) # C,O,N           ##
-                                                                
-                                                                LL=L_ex_benigns
-                                                                length=len(LL) ##
-                                                                
-                                                                liste_ex=LL[(int(alpha*length)):]    ##
-                                                                len_ex=len(liste_ex)                 ##
-                                                                liste_test=LL[:(int(alpha*length))]  ##
-                                                                    
-                                                                L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]] ##
-                                                                partitions      = L2part(L_partitions)  ##
-                                                                cat_partitions = 'trapeze_1'
-                                                                
-                                                                
-                                                                    
-                                                                l_indi=[]
-                                                                
-                                                                f_ccl_tri=ccl_tri
-                                                                
-                                                                Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri) ##
-                                                                
-                                                                l_resultats_tot.append(l_resultats)
 
-    ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
-    
-## Main
 
-l_resultats_tot=[]
+
+
+
+
+
 
 ## Paramètres
 
@@ -494,15 +430,15 @@ N=2
 n=6 ##
 nb=5 ##
 nc=3 ##
-nb_gen=1
+nb_gen=10
     
 p_ajout=0.2
 p_suppr=0.2
-p_cat=0.1
+p_cat=0.2
 p_statut=0.2
     
-taille_indi=20
-taille_while=50
+taille_indi=5
+taille_while=5
 
 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
 
@@ -535,10 +471,8 @@ Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_i
 
 l_resultats_tot.append(l_resultats)
 
-#ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
+ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
 #ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
-
-#comparaison_param()
     
 print("############") ##
 print("exiting main") ##
