@@ -288,7 +288,7 @@ def muter_pop1(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,
         if (not same) or (Pop[i][1]==-1):
             Pop[i]=[indi,fit(indi, liste_ex,n,len_ex,nc,partitions)]
 
-## ccl_tri
+## ccl_tri et tbc
 
 def ccl_tri(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par les règles selon min et max
     ccl=[]
@@ -415,6 +415,7 @@ def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du pro
 
 l_resultats_tot=[]
 
+## Fonction d'écriture automatique
 
 def comparaison_param():
     
@@ -423,12 +424,12 @@ def comparaison_param():
     l_resultats_tot = []
     
     #l_N         = [10]
-    l_N         = [5,10,20]
+    l_N         = [5,10]
     l_n         = [6] 
     l_nb        = [5] 
     l_nc        = [3] 
     #l_nb_gen    = [1]
-    l_nb_gen    = [1,5,10,20]
+    l_nb_gen    = [1,5]
         
     l_p_suppr   = [0.2]   
     #l_p_suppr   = [0.2,0.4,0.6]
@@ -440,17 +441,17 @@ def comparaison_param():
     #l_p_ajout   = [0.2,0.4,0.6]
         
     #l_taille_indi   = [10]
-    l_taille_indi   = [1,5,10,20]
-    taille_while    = 50
+    l_taille_indi   = [10]
+    l_taille_while    = [50]
     
     #l_elitisme      = [True]
-    l_elitisme      = [True,False]
+    l_elitisme      = [True]
     l_fit           = [fitness]
     l_f_croisement  = [croiser_population1]
     l_f_mutation    = [muter_pop]
     l_f_selection   = [selection]
     
-    nb_iterations= len(l_N)*len(l_n)*len(l_nb)*len(l_nc)*len(l_nb_gen)*len(l_p_suppr)*len(l_p_cat)*len(l_p_statut)*len(l_p_ajout)*len(l_taille_indi)*len(taille_while)*len(l_elitisme)*len(l_fit)*len(l_f_croisement)*len(l_f_mutation)*len(l_f_selection)
+    nb_iterations= len(l_N)*len(l_n)*len(l_nb)*len(l_nc)*len(l_nb_gen)*len(l_p_suppr)*len(l_p_cat)*len(l_p_statut)*len(l_p_ajout)*len(l_taille_indi)*len(l_taille_while)*len(l_elitisme)*len(l_fit)*len(l_f_croisement)*len(l_f_mutation)*len(l_f_selection)
     
     print("---")
     print("Nombre d'itérations :", nb_iterations)
@@ -489,7 +490,7 @@ def comparaison_param():
                                                                 #print("              f_selection:",f_selection)  
     
                                                                 cpt_iterations+=1
-                                                                print("iteration", cpt_iterations, "/", nb_iterations)
+                                                                print("## Iteration", cpt_iterations, "/", nb_iterations,'##')
                                                                 
                                                                 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
                                                                 
@@ -523,11 +524,108 @@ def comparaison_param():
     print("temps total d'exécution :", t_fin-t_deb)
     print("---")
     ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
+
+def ecriture_ajout():
+    N=2
+    n=6 ##
+    nb=5 ##
+    nc=3 ##
+    nb_gen=10
     
-## Main
+    p_ajout=0.2
+    p_suppr=0.2
+    p_cat=0.2
+    p_statut=0.2
+    
+    taille_indi=5
+    taille_while=5
 
-## Paramètres
+    alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
 
+    L_ex_danger  = lire.get_sets(10) # C,Cr,N,Na,0,S     ##
+    L_ex_benigns = lire.get_sets2(10) # C,Cr,N,Na,0,S   ##
+    L_ex_bsimple = lire.get_sets3(10) # C,O,N           ##
+
+    LL=L_ex_benigns
+    length=len(LL) ##
+
+    liste_ex=LL[(int(alpha*length)):]    ##
+    len_ex=len(liste_ex)                 ##
+    liste_test=LL[:(int(alpha*length))]  ##
+    
+    L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]] ##
+    partitions      = L2part(L_partitions)  ##
+    cat_partitions = 'trapeze_1'
+
+    elitisme        = True
+    fit             = fitness
+    f_croisement    = croiser_population1
+    f_mutation      = muter_pop
+    f_selection     = selection
+    
+    l_indi=[]
+
+    f_ccl_tri=ccl_tri
+    Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri)
+    l_resultats_tot.append(l_resultats)
+    ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
+
+def ecriture_suppr():
+    N=4
+    n=6 ##
+    nb=5 ##
+    nc=3 ##
+    nb_gen=10
+    
+    p_ajout=0.2
+    p_suppr=0.2
+    p_cat=0.2
+    p_statut=0.2
+    
+    taille_indi=5
+    taille_while=5
+
+    alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
+
+    L_ex_danger  = lire.get_sets(10) # C,Cr,N,Na,0,S     ##
+    L_ex_benigns = lire.get_sets2(10) # C,Cr,N,Na,0,S   ##
+    L_ex_bsimple = lire.get_sets3(10) # C,O,N           ##
+    
+    LL=L_ex_benigns
+    length=len(LL) ##
+
+    liste_ex=LL[(int(alpha*length)):]    ##
+    len_ex=len(liste_ex)                 ##
+    liste_test=LL[:(int(alpha*length))]  ##
+    
+    L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]] ##
+    partitions      = L2part(L_partitions)  ##
+    cat_partitions = 'trapeze_1'
+
+    elitisme        = True
+    fit             = fitness
+    f_croisement    = croiser_population1
+    f_mutation      = muter_pop
+    f_selection     = selection
+    
+    l_indi=[]
+
+    f_ccl_tri=ccl_tri
+    Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri)
+    l_resultats_tot.append(l_resultats)
+    ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
+
+
+
+
+
+
+
+
+
+## Lancer simple
+
+'''
 N=2
 n=6 ##
 nb=5 ##
@@ -569,13 +667,19 @@ l_indi=[]
 
 f_ccl_tri=ccl_tri
 
+
 Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri) ##
 
 l_resultats_tot.append(l_resultats)
 
 ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
 #ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
+'''
 
+### Exécution écrite ###
+
+ecriture_suppr()    
+#ecriture_ajout()
 #comparaison_param()
 
     
