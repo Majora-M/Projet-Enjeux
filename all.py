@@ -413,6 +413,11 @@ def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du pro
 
 l_resultats_tot=[]
 
+## Changements de parametres
+
+def comparaison_param():
+    l_N
+
 N=20
 n=6 ##
 nb=5 ##
@@ -458,7 +463,7 @@ Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_i
 
 l_resultats_tot.append(l_resultats)
 
-ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
+# ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
     
 print("############") ##
 print("exiting main") ##
