@@ -33,17 +33,20 @@ Forme de la liste :
 
 """  
     
-<<<<<<< HEAD
 def write_file(file_name, list):
     file=open(file_name, "w")       # mode overwrite
     # file=open(file_name, "a")      # mode append
     if os.stat(file).st_size == 0 :
         file.write("N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s"+"\n")
-=======
+    for i in range(len(list)):
+        for j in range(len(list[0])):
+            file.write(str(list[i][j])+",")
+        file.write("\n")
+    file.close()
+
 def overwrite_file(file_name, list):
     file=open(file_name, "w")
     file.write("N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,    tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s"+"\n")
->>>>>>> 0206bb373b5ed0563816fb6ddbbd8f21543924a3
     for i in range(len(list)):
         for j in range(len(list[0])):
             file.write(str(list[i][j])+",")

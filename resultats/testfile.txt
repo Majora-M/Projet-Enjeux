@@ -1,0 +1,2 @@
+N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,    tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s
+10,6,5,3,1,0.2,0.1,0.2,0.2,20,50,trapeze_1,True,fitness,croiser_population1,muter_pop,selection,0,13.308207750320435,0.8244033156501847,0.8148888580394662,0.7997135866349687,79.15789473684211,64.52631578947368,
