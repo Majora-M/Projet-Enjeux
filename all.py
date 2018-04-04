@@ -320,7 +320,7 @@ def ccl_tri1(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par
 
 ## Lanceur
 
-def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri):
+def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri):
     debut=time.time()
     pop=creer_population(N-len(l_indi),n,liste_ex,taille_indi,partitions)+l_indi
     l_fit=liste_fit(pop,fit,liste_ex,n,len_ex,nc,partitions)
@@ -354,6 +354,12 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     plt.legend()
     plt.show()
     
+    str_fit             = fit.__name__
+    str_f_croisement    = f_croisement.__name__
+    str_f_mutation      = f_mutation.__name__
+    str_f_selection     = f_selection.__name__
+    
+    
     tps_calc    = fin-debut
     fit_max     = Y_max[-1]
     fit_moy     = Y_moy[-1]
@@ -370,7 +376,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     tbc_ns,tbc_s = taux_bc(Pop[-1][0],liste_test,n,nc,partitions,f_ccl_tri)
     # retourner le liste des parametres utilises et resultats de calcul
     # N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,    tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s
-    l_resultats=[N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,str(partitions),elitisme,str(fit),str(f_croisement),str(f_mutation),str(f_selection),len(l_indi),tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s]
+    l_resultats=[N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,cat_partitions,elitisme,str_fit,str_f_croisement,str_f_mutation,str_f_selection,len(l_indi),tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s]
     return Pop,l_resultats
 
 ## Finalisation 
@@ -406,6 +412,7 @@ def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du pro
             indi=indi[:i]+indi[(i+1):]
     return R
 
+l_resultats_tot=[]
 
 N=20
 n=6 ##
@@ -423,9 +430,9 @@ taille_while=50
 
 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
 
-L_ex_danger=get_sets(10) # C,Cr,N,Na,0,S     ##
-L_ex_benigns=get_sets2(10) # C,Cr,N,Na,0,S   ##
-L_ex_bsimple=get_sets3(10) # C,O,N           ##
+L_ex_danger  = lire.get_sets(10) # C,Cr,N,Na,0,S     ##
+L_ex_benigns = lire.get_sets2(10) # C,Cr,N,Na,0,S   ##
+L_ex_bsimple = lire.get_sets3(10) # C,O,N           ##
 
 LL=L_ex_benigns
 length=len(LL) ##
@@ -435,21 +442,24 @@ len_ex=len(liste_ex)                 ##
 liste_test=LL[:(int(alpha*length))]  ##
     
 L_partitions=[[7,10,35,40,60,67,80,90],[4,11,26,30,40,50,60,70],[1.5,2.5,6,7.6,13.5,15.7,19.4,22],[3,10,30,40,50,60,70,80],[2,11.5,22.5,26,53,60,75,80],[4,7,30,40,50,60,70,80]] ##
-partitions=L2part(L_partitions)  ##
-    
-elitisme=True
-fit=fitness
-f_croisement=croiser_population1
-f_mutation=muter_pop
-f_selection=selection
+partitions      = L2part(L_partitions)  ##
+cat_partitions = 'trapeze_1'
+
+elitisme        = True
+fit             = fitness
+f_croisement    = croiser_population1
+f_mutation      = muter_pop
+f_selection     = selection
     
 l_indi=[]
 
 f_ccl_tri=ccl_tri
 
-Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri) ##
+Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri) ##
 
-ecrire.write_file("resultats/testfile.txt", l_resultats)
+l_resultats_tot.append(l_resultats)
+
+ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
     
 print("############") ##
 print("exiting main") ##

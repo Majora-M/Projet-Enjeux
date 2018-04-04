@@ -1,3 +1,2 @@
-n,nb,nc,N,nb_gen,taille_chromo,taille_while,elitisme
-1,2,3,4,
-2,3,4,5,
+N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,    tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s
+20,6,5,3,1,0.2,0.1,0.2,0.2,20,50,trapeze,1,True,fitness,croiser_population1,muter_pop,selection,0,28.76749324798584,0.8468870143891196,0.8232246500664603,0.806270778565847,82.47368421052632,72.0,
