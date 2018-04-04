@@ -326,7 +326,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     print('Durée du calcul :',fin-debut,'secondes')
     print('')
     print('Calcul des fitness :')
-    print('Fit max :',Y_max[-1])
+f_    print('Fit max :',Y_max[-1])
     print('Fit moyenne :',Y_moy[-1])
     print('Fit min :',Y_min[-1])
     print('')
@@ -366,7 +366,7 @@ def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonn
     t=0
     t1=0
     for ex in liste_test:
-        l=ccl_tri(indi,ex,n,nc,partitions)
+        l=f_ccl_tri(indi,ex,n,nc,partitions)
         k=ex[1]
         a,b=l[k],max( l[:k]+l[(k+1):] )
         if a>b:
