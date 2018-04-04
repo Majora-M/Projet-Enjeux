@@ -249,7 +249,7 @@ def selection(Pop,N): # Sélection des N meilleurs individus
 
 
 def croiser_population(Pop,N): # Croisement de la pop de taille N
-    shuffle(pop)
+    shuffle(Pop)
     pop_ajout=[croiser_indi(Pop[0][0],Pop[-1][0])]
     for i in range(longueur-1):
         pop_ajout+=[croiser_indi(Pop[i][0],Pop[i+1][0])]
