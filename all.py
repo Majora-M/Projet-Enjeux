@@ -489,7 +489,7 @@ def comparaison_param():
                                                                 #print("              f_selection:",f_selection)  
     
                                                                 cpt_iterations+=1
-                                                                print("iteration", cpt_iterations, "/", nb_iterations)
+                                                                print("### Iteration", cpt_iterations, "/", nb_iterations,'###')
                                                                 
                                                                 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
                                                                 
