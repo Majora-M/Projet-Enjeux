@@ -386,7 +386,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     fit_moy     = Y_moy[-1]
     fit_min     = Y_min[-1]
     print('')
-    print('Durée du calcul :',tps_calc,'secondes')
+    print('Durée du calcul :',int(tps_calc),'secondes')
     print('')
     print('Calcul des fitness :')
     print('Fit max :',fit_max)
