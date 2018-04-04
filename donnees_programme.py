@@ -26,8 +26,9 @@ p_suppr=0.2
 p_cat=0.1
 p_statut=0.5
 fit=fitness1
+l_indi=[]
 
-# pop=lanceur(N,nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo,taille_while,elitisme,fit)
+# pop=lanceur(N,nb_gen,p_suppr,p_cat,p_statut,p_ajout,n,nb,L_classe,L_ex,taille_chromo,taille_while,elitisme,fit,l_indi)
 
 
 ### Améliorations :
