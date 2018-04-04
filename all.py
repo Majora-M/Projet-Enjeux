@@ -253,7 +253,7 @@ def croiser_population(Pop,N): # Croisement de la pop de taille N
     pop_ajout=[croiser_indi(Pop[0][0],Pop[-1][0])]
     for i in range(N-1):
         pop_ajout+=[croiser_indi(Pop[i][0],Pop[i+1][0])]
-    Pop+=[[[i,-1] for i in pop_ajout]]
+    Pop+=[[i,-1] for i in pop_ajout]
 
 def croiser_population1(Pop,N): # Idem mais en fonction de la fitness
     proportion=[]
