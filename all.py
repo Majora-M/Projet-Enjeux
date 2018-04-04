@@ -249,11 +249,11 @@ def selection(Pop,N): # Sélection des N meilleurs individus
 
 
 def croiser_population(Pop,N): # Croisement de la pop de taille N
-    shuffle(pop)
+    shuffle(Pop)
     pop_ajout=[croiser_indi(Pop[0][0],Pop[-1][0])]
-    for i in range(longueur-1):
-        pop+=[croiser_indi(Pop[i][0],Pop[i+1][0])]
-    Pop+=[[[i,-1] for i in pop]]
+    for i in range(N-1):
+        pop_ajout+=[croiser_indi(Pop[i][0],Pop[i+1][0])]
+    Pop+=[[[i,-1] for i in pop_ajout]]
 
 def croiser_population1(Pop,N): # Idem mais en fonction de la fitness
     proportion=[]
@@ -351,6 +351,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     Y_min=[Pop[0][1]]
     print('Initialisation')
     for i in range(1,nb_gen+1):
+        debut_gen=time.time()
         if elitisme:
             indi_f_elite=Pop[-1]
         f_croisement(Pop,N)
@@ -362,7 +363,8 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
         Y_max.append(Pop[-1][1])
         Y_moy.append(sum([i[1] for i in Pop])/N)
         Y_min.append(Pop[0][1])
-        print('Génération',i,'sur',nb_gen)
+        fin_gen=time.time()
+        print('Génération',i,'/',nb_gen,'--- Temps restant approximatif :',int((fin_gen-debut_gen)*(nb_gen-i)),'s')
     fin=time.time()
     trace_repere(nb_gen,1)
     plt.plot(X,Y_max,'g',label="max")
@@ -384,7 +386,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     fit_moy     = Y_moy[-1]
     fit_min     = Y_min[-1]
     print('')
-    print('Durée du calcul :',tps_calc,'secondes')
+    print('Durée du calcul :',int(tps_calc),'secondes')
     print('')
     print('Calcul des fitness :')
     print('Fit max :',fit_max)
@@ -514,23 +516,21 @@ def comparaison_param():
     
 ## Main
 
-l_resultats_tot=[]
-
 ## Paramètres
 
 N=2
 n=6 ##
 nb=5 ##
 nc=3 ##
-nb_gen=1
+nb_gen=10
     
 p_ajout=0.2
 p_suppr=0.2
-p_cat=0.1
+p_cat=0.2
 p_statut=0.2
     
-taille_indi=20
-taille_while=50
+taille_indi=5
+taille_while=5
 
 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
 
@@ -563,10 +563,11 @@ Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_i
 
 l_resultats_tot.append(l_resultats)
 
-#ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
+ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
 #ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
 
 comparaison_param()
+
     
 print("############") ##
 print("exiting main") ##
