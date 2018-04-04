@@ -573,10 +573,10 @@ Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_i
 
 l_resultats_tot.append(l_resultats)
 
-#ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
+ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
 #ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
 
-comparaison_param()
+#comparaison_param()
 
     
 print("############") ##
