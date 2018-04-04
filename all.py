@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from random import *
 from math import *
 import os
-import inspect
 from copy import *
 import time
 
@@ -326,7 +325,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     print('Durée du calcul :',fin-debut,'secondes')
     print('')
     print('Calcul des fitness :')
-f_    print('Fit max :',Y_max[-1])
+    print('Fit max :',Y_max[-1])
     print('Fit moyenne :',Y_moy[-1])
     print('Fit min :',Y_min[-1])
     print('')
