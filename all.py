@@ -416,44 +416,68 @@ l_resultats_tot=[]
 
 def comparaison_param():
     
+    t_deb=time.time()
+    
     l_resultats_tot = []
     
-    l_N         = [10]
+    #l_N         = [10]
+    l_N         = [5,10,20]
     l_n         = [6] 
     l_nb        = [5] 
     l_nc        = [3] 
-    l_nb_gen    = [1]
+    #l_nb_gen    = [1]
+    l_nb_gen    = [1,5,10,20]
         
-    l_p_ajout   = [0.2]
-    l_p_suppr   = [0.2]
+    l_p_suppr   = [0.2]   
+    #l_p_suppr   = [0.2,0.4,0.6]
     l_p_cat     = [0.1]
+    #l_p_cat     = [0.1,0.3,0.5]
     l_p_statut  = [0.2]
+    #l_p_statut  = [0.2,0.4,0.6]
+    l_p_ajout   = [0.2]
+    #l_p_ajout   = [0.2,0.4,0.6]
         
-    l_taille_indi   = [20]
+    l_taille_indi   = [10]
+    #l_taille_indi   = [1,5,10,20]
     taille_while    = 50
     
     l_elitisme      = [True]
+    #l_elitisme      = [True,False]
     l_fit           = [fitness]
     l_f_croisement  = [croiser_population1]
     l_f_mutation    = [muter_pop]
     l_f_selection   = [selection]
     
     for N in l_N :
+        #print("N                        :",N)
         for n in l_n :
+            #print(" n                       :",n)
             for nb in l_nb :
+                #print("  nb                     :",nb)
                 for nc in l_nc :
+                    #print("   nc                    :",nc)
                     for nb_gen in l_nb_gen :
-                        for p_ajout in l_p_ajout :
-                            for p_suppr in l_p_suppr :
-                                for p_cat in l_p_cat :
-                                    for p_statut in l_p_statut :
+                        #print("    nb_gen               :",nb_gen)
+                        for p_suppr in l_p_suppr :
+                            #print("     p_suppr             :",p_suppr)
+                            for p_cat in l_p_cat :
+                                #print("      p_cat              :",p_cat)
+                                for p_statut in l_p_statut :
+                                    #print("       p_statut          :",p_statut)
+                                    for p_ajout in l_p_ajout :
+                                        #print("        p_ajout          :",p_ajout)
                                         for taille_indi in l_taille_indi :
+                                            #print("         taille_indi     :",taille_indi)
                                             for elitisme in l_elitisme :
+                                                #print("          elitisme       :", elitisme)
                                                 for fit in l_fit :
+                                                    #print("           fit           :",fit)
                                                     for f_croisement in l_f_croisement :
+                                                        #print("            f_croisement :",f_croisement)
                                                         for f_mutation in l_f_mutation :
+                                                            #print("             f_mutation  :",f_mutation)
                                                             for f_selection in l_f_selection :
-                                            
+                                                                #print("              f_selection:",f_selection)  
     
                                                                 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
                                                                 
@@ -482,6 +506,10 @@ def comparaison_param():
                                                                 
                                                                 l_resultats_tot.append(l_resultats)
 
+    t_fin
+    print("---")
+    print("temps total d'exécution :", t_fin-t_deb)
+    print("---")
     ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
     
 ## Main
@@ -538,7 +566,7 @@ l_resultats_tot.append(l_resultats)
 #ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
 #ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
 
-#comparaison_param()
+comparaison_param()
     
 print("############") ##
 print("exiting main") ##

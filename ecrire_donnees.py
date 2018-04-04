@@ -7,7 +7,7 @@ lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while
 Forme de la liste :
     N               int     Nombre d'individus (fixe)
     n               int     Nombre d'éléments chimiques        
-    nb              int     Nombre 
+    nb              int     Nombre de fonctions par partition
     nc              int     Nombre de classes
     nb_gen          int     Nombre de générations
     p_suppr         float   Probabilité de supprimer une règle
@@ -18,7 +18,7 @@ Forme de la liste :
     taille_while    int     Compteur sécurité des boucles while
     partitions      str/f   Type de partition
     elitisme        bool    Activation de l'élistisme
-    fit             str/funcType de fitness utilisé
+    fit             str/f   Type de fitness utilisé
     f_croisement    str/f   Type de croisement
     f_mutation      str/f   Type de mutation
     f_selection     str/f   Type de sélection
