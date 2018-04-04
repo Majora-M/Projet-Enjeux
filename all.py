@@ -49,7 +49,7 @@ def trace_partition(l): #On doit avoir len(l)=2n-2 avec n=nombre de fonctions mu
         trace_mu_simple(l[2*i],l[2*i+1],l[2*i+2],l[2*i+3])
     trace_mu_simple(l[-2],l[-1],100,100)
     
-## Création vecteur et chromosome
+## Création vecteur et individu
     
 def vecteur_aleatoire(n): # Crée un vecteur aléatoire de taille n normalisé
     L=[random() for i in range(n)]
@@ -134,7 +134,7 @@ def muter_cat(indi,p_cat,nb,taille_while): # Peut changer la catégorie d'une pr
 
 def muter_statut(indi,p_statut,n,taille_while): # Peut activer ou désactiver une prémisse
     p=random()
-    if p<=p_statut:  #muter le chromosome
+    if p<=p_statut:  #muter l'individu
         i_boucle=0
         nouveau = False
         t=len(indi)
@@ -232,12 +232,12 @@ def liste_fit(pop,fit,liste_ex,n,len_ex,nc,partitions): # Calcul de la liste de 
 
 ## Algo génétique
 
-def creer_population(N,n,liste_ex,taille_chromo,partitions): # Crée une pop de taille N selon la liste d'exemples
+def creer_population(N,n,liste_ex,taille_indi,partitions): # Crée une pop de taille N selon la liste d'exemples
     pop=[]
     for i in range(N):
         L=deepcopy(liste_ex)
         shuffle(L)
-        pop+=[creer_indi(L[:taille_chromo],n,partitions)]
+        pop+=[creer_indi(L[:taille_indi],n,partitions)]
     return pop
 
 
@@ -289,9 +289,9 @@ def muter_pop1(Pop,p_suppr,p_cat,p_statut,p_ajout,n,nb,nc,liste_ex,taille_while,
 
 ## Lanceur
 
-def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi):
+def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi):
     debut=time.time()
-    pop=creer_population(N-len(l_indi),n,liste_ex,taille_chromo,partitions)+l_indi
+    pop=creer_population(N-len(l_indi),n,liste_ex,taille_indi,partitions)+l_indi
     l_fit=liste_fit(pop,fit,liste_ex,n,len_ex,nc,partitions)
     Pop=[ [pop[i],l_fit[i]] for i in range(N)]
     Pop=sorted(Pop, key=lambda tup: tup[1])
@@ -299,8 +299,8 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille
     Y_max=[Pop[-1][1]]
     Y_moy=[sum([i[1] for i in Pop])/N]
     Y_min=[Pop[0][1]]
-    print(0)
-    for i in range(1,nb_gen):
+    print('Initialisation')
+    for i in range(1,nb_gen+1):
         if elitisme:
             indi_f_elite=Pop[-1]
         f_croisement(Pop,N)
@@ -312,7 +312,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille
         Y_max.append(Pop[-1][1])
         Y_moy.append(sum([i[1] for i in Pop])/N)
         Y_min.append(Pop[0][1])
-        print(i)
+        print('Génération',i,'sur',nb_gen)
     fin=time.time()
     trace_repere(nb_gen,1)
     plt.plot(X,Y_max,'g',label="max")
@@ -322,7 +322,14 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille
     plt.ylabel('Fitness')
     plt.legend()
     plt.show()
-    print(fin-debut,Y_max[-1],Y_moy[-1],Y_min[-1])
+    print('')
+    print('Durée du calcul :',fin-debut,'secondes')
+    print('')
+    print('Calcul des fitness :')
+    print('Fit max :',Y_max[-1])
+    print('Fit moyenne :',Y_moy[-1])
+    print('Fit min :',Y_min[-1])
+    print('')
     return Pop
 
 ## Finalisation
@@ -368,7 +375,8 @@ def taux_bc(indi,liste_test,n,nc,partitions,f_ccl_tri): # Calcul du taux de bonn
         elif a==b:
             t+=0.5
     length=len(liste_test)
-    print('Taux de bonne classification :',t/length*100,t1/length*100)
+    print('Taux de bonne classification :',t/length*100,'%','(stricte) ;',t1/length*100,'%','(non stricte)')
+    print('')
 
 
 def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du programme, pour enlever les règles inutiles d'un indi
@@ -379,22 +387,22 @@ def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du pro
             R.append(indi[i])
             i+=1
         else:
-            indi=indi[:i]+chromo[(i+1):]
+            indi=indi[:i]+indi[(i+1):]
     return R
 
 
-N=10
+N=20
 n=6 ##
 nb=5 ##
 nc=3 ##
-nb_gen=10
+nb_gen=1
     
 p_ajout=0.2
 p_suppr=0.2
 p_cat=0.1
 p_statut=0.2
     
-taille_chromo=20
+taille_indi=20
 taille_while=50
 
 alpha = 0.5 # taille de la liste d'exemple d'entraînement sur la taille de la liste d'exemple totale
@@ -421,7 +429,7 @@ f_selection=selection
     
 l_indi=[]
 
-Pop=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_chromo,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi) ##
+Pop=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi) ##
     
 f_ccl_tri=ccl_tri
     
