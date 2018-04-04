@@ -413,6 +413,15 @@ def epure(indi,fit,liste_ex,n,len_ex,nc,partitions): # À faire à la fin du pro
 
 l_resultats_tot=[]
 
+
+
+
+
+
+
+
+## Paramètres
+
 N=2
 n=6 ##
 nb=5 ##
