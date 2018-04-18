@@ -430,14 +430,14 @@ def comparaison_param():
     #l_nb_gen    = [1]
     l_nb_gen    = [1,5,10,20]
         
-    l_p_suppr   = [0.2]   
-    #l_p_suppr   = [0.2,0.4,0.6]
-    l_p_cat     = [0.1]
-    #l_p_cat     = [0.1,0.3,0.5]
-    l_p_statut  = [0.2]
-    #l_p_statut  = [0.2,0.4,0.6]
-    l_p_ajout   = [0.2]
-    #l_p_ajout   = [0.2,0.4,0.6]
+    l_p_suppr   = [0.05]   
+    #l_p_suppr   = [0.01,0.05,0.1,0.2]
+    l_p_cat     = [0.05]
+    #l_p_cat     = [0.01,0.05,0.1,0.2]
+    l_p_statut  = [0.05]
+    #l_p_statut  = [0.01,0.05,0.1,0.2]
+    l_p_ajout   = [0.05]
+    #l_p_ajout   = [0.01,0.05,0.1,0.2]
         
     #l_taille_indi   = [10]
     l_taille_indi   = [1,5,10,20]
@@ -446,11 +446,11 @@ def comparaison_param():
     #l_elitisme      = [True]
     l_elitisme      = [True,False]
     l_fit           = [fitness]
-    l_f_croisement  = [croiser_population1]
-    l_f_mutation    = [muter_pop]
+    l_f_croisement  = [croiser_population,croiser_population1]
+    l_f_mutation    = [muter_pop,muter_pop1]
     l_f_selection   = [selection]
     
-    nb_iterations= len(l_N)*len(l_n)*len(l_nb)*len(l_nc)*len(l_nb_gen)*len(l_p_suppr)*len(l_p_cat)*len(l_p_statut)*len(l_p_ajout)*len(l_taille_indi)*len(taille_while)*len(l_elitisme)*len(l_fit)*len(l_f_croisement)*len(l_f_mutation)*len(l_f_selection)
+    nb_iterations= len(l_N)*len(l_n)*len(l_nb)*len(l_nc)*len(l_nb_gen)*len(l_p_suppr)*len(l_p_cat)*len(l_p_statut)*len(l_p_ajout)*len(l_taille_indi)*len(l_elitisme)*len(l_fit)*len(l_f_croisement)*len(l_f_mutation)*len(l_f_selection)
     
     print("---")
     print("Nombre d'itérations :", nb_iterations)
@@ -573,10 +573,18 @@ Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_i
 
 l_resultats_tot.append(l_resultats)
 
-ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
+#ecrire.overwrite_file("resultats/testfile.txt", l_resultats_tot)
 #ecrire.write_file("resultats/testfile.txt", l_resultats_tot)
 
-#comparaison_param()
+comparaison_param()
+
+## A faire
+# retourner le nb d'exemples utilisés cad lus. Proposiion : le noter "ne"
+# construire un score binaire (1 si bien classé, 0 sinon) car c'est la méthode de score du client, et l'appliquer chez nous pour pouvoir comparer nos résultats.
+# construire un score complémentaire : un ensemble de règles donne un degré de certitude par classe. Pour chacune de ses classes i :
+#   si i est la bonne classe : score += score_i
+#   si i est la mauvaise classe : score += 1-score_i
+
 
     
 print("############") ##
