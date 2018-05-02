@@ -394,7 +394,7 @@ def lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_w
     print('Fit min :',fit_min)
     print('')
     
-    tbc_ns,tbc_s = taux_bc(Pop[-1][0],liste_test,n,nc,partitions,f_ccl_tri)
+    tbc_ns,tbc_s = taux_bc(Pop[-1][0],liste_ex,n,nc,partitions,f_ccl_tri)
     # retourner le liste des parametres utilises et resultats de calcul
     # N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,    tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s
     l_resultats=[N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,cat_partitions,elitisme,str_fit,str_f_croisement,str_f_mutation,str_f_selection,len(l_indi),tps_calc,fit_max,fit_moy,fit_min,tbc_ns,tbc_s]
@@ -424,12 +424,12 @@ def comparaison_param():
     l_resultats_tot = []
     
     #l_N         = [10]
-    l_N         = [5,10]
+    l_N         = [8]
     l_n         = [6] 
     l_nb        = [5] 
     l_nc        = [3] 
     #l_nb_gen    = [1]
-    l_nb_gen    = [1,5]
+    l_nb_gen    = [50]
         
     l_p_suppr   = [0.05]   
     #l_p_suppr   = [0.01,0.05,0.1,0.2]
@@ -437,18 +437,18 @@ def comparaison_param():
     #l_p_cat     = [0.01,0.05,0.1,0.2]
     l_p_statut  = [0.05]
     #l_p_statut  = [0.01,0.05,0.1,0.2]
-    l_p_ajout   = [0.05]
-    #l_p_ajout   = [0.01,0.05,0.1,0.2]
+    #l_p_ajout   = [0.05]
+    l_p_ajout   = [0,0.001,0.0025,0.005,0.01,0.025,0.05,0.1,0.2,0.4,0.8,1]
         
     #l_taille_indi   = [10]
     l_taille_indi   = [10]
     l_taille_while    = [50]
-    
+    taille_while=50
     #l_elitisme      = [True]
     l_elitisme      = [True]
     l_fit           = [fitness]
-    l_f_croisement  = [croiser_population,croiser_population1]
-    l_f_mutation    = [muter_pop,muter_pop1]
+    l_f_croisement  = [croiser_population]
+    l_f_mutation    = [muter_pop]
     l_f_selection   = [selection]
     
     nb_iterations= len(l_N)*len(l_n)*len(l_nb)*len(l_nc)*len(l_nb_gen)*len(l_p_suppr)*len(l_p_cat)*len(l_p_statut)*len(l_p_ajout)*len(l_taille_indi)*len(l_taille_while)*len(l_elitisme)*len(l_fit)*len(l_f_croisement)*len(l_f_mutation)*len(l_f_selection)
@@ -515,7 +515,7 @@ def comparaison_param():
                                                                 
                                                                 f_ccl_tri=ccl_tri
                                                                 
-                                                                Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_suppr,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri) ##
+                                                                Pop,l_resultats=lanceur(N,n,nb,nc,nb_gen,p_ajout,p_cat,p_statut,p_ajout,taille_indi,taille_while,liste_ex,len_ex,partitions,cat_partitions,elitisme,fit,f_croisement,f_mutation,f_selection,l_indi,f_ccl_tri) ##
                                                                 
                                                                 l_resultats_tot.append(l_resultats)
 
@@ -687,9 +687,9 @@ l_resultats_tot.append(l_resultats)
 #   si i est la bonne classe : score += score_i
 #   si i est la mauvaise classe : score += 1-score_i
 
-ecriture_suppr()    
+#ecriture_suppr()    
 #ecriture_ajout()
-#comparaison_param()
+comparaison_param()
 
     
 print("############") ##
