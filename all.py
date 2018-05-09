@@ -154,19 +154,26 @@ def muter_statut(indi,p_statut,n,taille_while): # Peut activer ou désactiver un
 
 
 def croiser_indi(indi1,indi2): # Croisement entre deux individus
-    c1=deepcopy(indi1)
-    c2=deepcopy(indi2)
+    len1=len(indi1)
+    unique1=[1]*len1
+    len2=len(indi2)
+    unique2=[1]*len2
     indi_fils=[]
-    for regle in c1:
-        if regle in c2:
-            indi_fils.append(regle)
-            c1.remove(regle)
-            c2.remove(regle)
-    n1=len(c1)
-    n2=len(c2)
-    shuffle(c1)
-    shuffle(c2)
-    indi_fils+=c1[:n1//2]+c2[n2//2:]
+    for indice_regle1 in range(len1):
+        notfind=True
+        indice_regle2=0
+        while indice_regle2<len2 and notfind:
+            if indi1[indice_regle1] == indi2[indice_regle2]:
+                unique1[indice_regle1]=0
+                unique2[indice_regle2]=0
+                notfind=False
+                indi_fils.append(indi1[indice_regle1])
+            indice_regle2+=1
+    diff1=[indi1[i] for i in range(len1) if 1==unique1[i]]
+    diff2=[indi2[i] for i in range(len2) if 1==unique2[i]]
+    shuffle(diff1)
+    shuffle(diff2)
+    indi_fils+=diff1[:len(diff1)//2]+diff2[len(diff2)//2:]
     return(indi_fils)
 
 
