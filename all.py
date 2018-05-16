@@ -22,9 +22,7 @@ def mu(a,b,c,d): # Fonction d'appartance trapèze repérée par les points a,b,c
     return f
 
 def partition(l): #Renvoie la fonction de partition repéré par les points d'abcisses contenus dans l
-    def f(x):
-        return [mu(0,0,l[0],l[1])(x)]+[mu(l[2*i],l[2*i+1],l[2*i+2],l[2*i+3])(x) for i in range((len(l)+2)//2-2)] + [mu(l[-2],l[-1],100,100)(x)]
-    return f
+    return [mu(0,0,l[0],l[1])]+[mu(l[2*i],l[2*i+1],l[2*i+2],l[2*i+3]) for i in range((len(l)+2)//2-2)] + [mu(l[-2],l[-1],100,100)]
 
 def L2part(l): # Transforme un ensemble de listes de la forme précedente en un ensemble de partitions 
     return [partition(i) for i in l]
@@ -58,7 +56,7 @@ def vecteur_aleatoire(n): # Crée un vecteur aléatoire de taille n normalisé
     return [i*100/total for i in L]
     
 def classe_dominante(x,parti): # Pour x, pourcentage pour un élément chimique et sa partition parti, renvoie la classe dominante de x
-    l=parti(x)
+    l=[classe(x) for classe in parti]
     maxi,k=0,0
     for i in range(len(l)):
         if l[i]>maxi:
@@ -214,7 +212,7 @@ def fitness1(indi, liste_ex,n,len_ex,nc,partitions): #Marche pas toujours : + et
             certitude=1
             for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
                 if regle[i][0]:
-                    certitude= certitude*(partitions[i](ex[i+2])[regle[i][1]])   #partitions variable globale, liste de fonctions
+                    certitude= certitude*(partitions[i] [regle[i][1]] (ex[i+2]))   #partitions variable globale, liste de fonctions
             if not certitude == 0:
                 ccl.append([certitude, regle[-1]])
         return(ccl)
@@ -303,7 +301,7 @@ def ccl_tri(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par 
         certitude=1
         for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
             if regle[i][0]:
-                certitude= min(certitude,((partitions[i])(exemple[i+2]) [regle[i][1]]))   #partitions variable globale, liste de fonctions
+                certitude= min(certitude,((partitions[i]) [regle[i][1]] (exemple[i+2])))   #partitions variable globale, liste de fonctions
         if not certitude ==0:
             ccl.append([certitude, regle[-1]])
     R=[0 for i in range(nc)]
@@ -317,7 +315,7 @@ def ccl_tri1(indi,exemple,n,nc,partitions): # Tri les conclusions apportées par
         certitude=1
         for i in range(n):                                       #n variable globale, nbre d'éléments chimiques
             if regle[i][0]:
-                certitude= certitude*(partitions[i](exemple[i+2]) [regle[i][1]])   #partitions variable globale, liste de fonctions
+                certitude= certitude*(partitions[i] [regle[i][1]] (exemple[i+2]))   #partitions variable globale, liste de fonctions
         if not certitude ==0:
             ccl.append([certitude, regle[-1]])
     R=[0 for i in range(nc)]
